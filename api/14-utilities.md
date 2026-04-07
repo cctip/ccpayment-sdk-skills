@@ -1,110 +1,205 @@
-# Utilities
+# Utilities Module
 
-## 14.1 Verify Address
+Last Updated: 2026-04-07
 
-**Interface:** `POST /verifyAddress`
+All HTTP interfaces in this file are synchronized from the CCPayment API v2 definitions. Every route uses `POST` and the base URL is `https://ccpayment.com/ccpayment/v2/`.
 
-**Description:** Verify the validity of a blockchain address.
+## Endpoint List
 
-**Request Parameters:**
+- `/webhook/resend` -> `WebhookResend` (Resend webhook notifications)
+- `/getPaymentBlockHeight` -> `GetTradeBlockHeight` (No proto comment.)
+- `/checkWithdrawalAddressValidity` -> `CheckWithdrawalAddressValidity` (No proto comment.)
+- `/addressUnbinding` -> `DeprecatedAddress` (No proto comment.)
+- `/rescanLostTransaction` -> `RescanLostTransaction` (No proto comment.)
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| chain | string | Yes | Chain name | Length ≥1 |
-| address | string | Yes | Address | Length ≥1 |
+## Interface Details
 
-**Response Data:**
+### WebhookResend
 
-| Field | Type | Description |
-|------|------|------|
-| valid | bool | Whether valid |
-| message | string | Verification message |
+- HTTP: `POST /webhook/resend`
+- Request Type: `WebhookResendReq`
+- Response Type: `WebhookResendReply`
+- Description: Resend webhook notifications
 
-## 14.2 Abandon Address
+#### Request Parameters
 
-**Interface:** `POST /abandonAddress`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `startTimestamp` | `int64` | No | [(validate.rules).string={ignore_empty: true, gte: 1}] Start timestamp |
+| `endTimestamp` | `int64` | No |  |
+| `webhookResult` | `string` | No |  |
+| `transactionType` | `string` | No |  |
+| `recordIds` | `string[]` | No |  |
 
-**Description:** Abandon a deposit address that is no longer in use.
+#### Response Data
 
-**Request Parameters:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `resendCount` | `int64` | No |  |
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| chain | string | Yes | Chain name | Length ≥1 |
-| address | string | Yes | Address | Length ≥1 |
+### GetTradeBlockHeight
 
-**Response Data:** Empty object
+- HTTP: `POST /getPaymentBlockHeight`
+- Request Type: `GetTradeBlockHeightReq`
+- Response Type: `GetTradeBlockHeightResp`
 
-## 14.3 Get Hosted Invoice Order Info
+#### Request Parameters
 
-**Interface:** `POST /hostedInvoiceOrderInfo`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `record_id` | `string` | No |  |
 
-**Description:** Get Hosted Invoice order details.
+#### Response Data
 
-**Request Parameters:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | No |  |
+| `txBlockHeight` | `int64` | No |  |
+| `currBlockHeight` | `int64` | No |  |
+| `reqConfirmations` | `int64` | No |  |
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| orderId | string | Yes | Order ID | Length ≥1 |
+### CheckWithdrawalAddressValidity
 
-**Response Data:**
+- HTTP: `POST /checkWithdrawalAddressValidity`
+- Request Type: `CheckWithdrawalAddressValidityReq`
+- Response Type: `CheckWithdrawalAddressValidityResp`
 
-| Field | Type | Description |
-|------|------|------|
-| orderId | string | Order ID |
-| product | string | Product description |
-| price | string | Price |
-| priceSymbol | string | Price symbol |
-| invoiceUrl | string | Invoice URL |
-| buyerEmail | string | Buyer email |
-| expiredAt | int64 | Expiration time |
-| selectedCoinId | uint64 | Selected token ID |
-| selectedChain | string | Selected chain |
-| toAddress | string | Receiving address |
-| toMemo | string | Memo |
-| amountToPay | string | Amount to pay |
-| totalPaidValue | string | Total paid value |
-| paidList | Array | Paid list |
+#### Request Parameters
 
-## 14.4 Get Pay Info
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | No |  |
+| `address` | `string` | No |  |
 
-**Interface:** `POST /getPayInfo`
+#### Response Data
 
-**Description:** Get the payment information of an order (for frontend display).
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `addrIsValid` | `bool` | No |  |
 
-**Request Parameters:**
+### DeprecatedAddress
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| orderId | string | Yes | Order ID | Length ≥1 |
+- HTTP: `POST /addressUnbinding`
+- Request Type: `UnboundAddressReq`
+- Response Type: `UnboundAddressResp`
 
-**Response Data:**
+#### Request Parameters
 
-| Field | Type | Description |
-|------|------|------|
-| orderId | string | Order ID |
-| product | string | Product description |
-| price | string | Price |
-| priceSymbol | string | Price symbol |
-| address | string | Payment address |
-| memo | string | Memo |
-| amount | string | Payment amount |
-| coinSymbol | string | Token symbol |
-| chain | string | Chain name |
-| qrCode | string | QR code data |
-| expiredAt | int64 | Expiration time |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | No |  |
+| `address` | `string` | No |  |
 
-## 14.5 Health Check
+#### Response Data
 
-**Interface:** `POST /health`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `unbound` | `UnBoundAddressDetail[]` | No |  |
+| `unboundAt` | `int64` | No |  |
+| `userID` | `string` | No |  |
+| `referenceID` | `string` | No |  |
 
-**Description:** API health check interface.
+### RescanLostTransaction
 
-**Request Parameters:** None
+- HTTP: `POST /rescanLostTransaction`
+- Request Type: `RescanLostTransactionReq`
+- Response Type: `RescanLostTransactionReply`
 
-**Response Data:**
+#### Request Parameters
 
-| Field | Type | Description |
-|------|------|------|
-| status | string | Health status |
-| timestamp | int64 | Timestamp |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `toAddress` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `txId` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `memo` | `string` | No |  |
+
+#### Response Data
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `description` | `string` | No |  |
+
+## Data Models
+
+### WebhookResendReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `startTimestamp` | `int64` | No | [(validate.rules).string={ignore_empty: true, gte: 1}] Start timestamp |
+| `endTimestamp` | `int64` | No |  |
+| `webhookResult` | `string` | No |  |
+| `transactionType` | `string` | No |  |
+| `recordIds` | `string[]` | No |  |
+
+### WebhookResendReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `resendCount` | `int64` | No |  |
+
+### GetTradeBlockHeightReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `record_id` | `string` | No |  |
+
+### GetTradeBlockHeightResp
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | No |  |
+| `txBlockHeight` | `int64` | No |  |
+| `currBlockHeight` | `int64` | No |  |
+| `reqConfirmations` | `int64` | No |  |
+
+### CheckWithdrawalAddressValidityReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | No |  |
+| `address` | `string` | No |  |
+
+### CheckWithdrawalAddressValidityResp
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `addrIsValid` | `bool` | No |  |
+
+### UnboundAddressReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | No |  |
+| `address` | `string` | No |  |
+
+### UnboundAddressResp
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `unbound` | `UnBoundAddressDetail[]` | No |  |
+| `unboundAt` | `int64` | No |  |
+| `userID` | `string` | No |  |
+| `referenceID` | `string` | No |  |
+
+### UnBoundAddressDetail
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | No |  |
+| `address` | `string` | No |  |
+
+### RescanLostTransactionReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `toAddress` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `txId` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `memo` | `string` | No |  |
+
+### RescanLostTransactionReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `description` | `string` | No |  |

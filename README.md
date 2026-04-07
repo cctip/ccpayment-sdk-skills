@@ -90,7 +90,6 @@ The SDK is organized by functional modules, totaling 13 modules:
 
 ### Other Modules
 - `orders` - Order management
-- `checkout` - Checkout management
 - `swap` - Swap functionality
 - `utilities` - Utility interfaces
 
@@ -226,7 +225,7 @@ source generated/shell/env.sh && ./generated/shell/merchant_assets.sh
 
 ## Documentation
 
-- 📖 [API Documentation](.rules/api/README.md) - Complete API interface documentation
+- 📖 [API Documentation](api/README.md) - Complete API interface documentation
 - 🛠️ [Code Generator Instructions](SKILL.md) - Detailed instructions for the code generator
 - 🌐 [Official Documentation](https://ccpayment.com/api/doc) - CCPayment official documentation
 
@@ -236,13 +235,13 @@ source generated/shell/env.sh && ./generated/shell/merchant_assets.sh
 
 **Step 1: Import Project Directory**
 
-将整个 `ccpayment-sdk-skills` 项目目录导入到你的工作区，因为代码生成器需要读取 `api/` 目录下的 API 文档文件：
+Import the entire `ccpayment-sdk-skills` project directory into your workspace, because the code generator needs to read the API documentation files under `api/`:
 
 ```
 @(ccpayment-sdk-skills/)
 ```
 
-或者手动将项目复制到工作区后，在 AI Agent 中引用 SKILL.md：
+Or copy the project into your workspace manually, then reference `SKILL.md` in your AI agent:
 
 ```
 @(ccpayment-sdk-skills/SKILL.md)

@@ -1,127 +1,208 @@
 # Orders Module
 
-## 10.1 Get Order Info
+Last Updated: 2026-04-07
 
-**Interface:** `POST /getAppOrderInfo`
+All HTTP interfaces in this file are synchronized from the CCPayment API v2 definitions. Every route uses `POST` and the base URL is `https://ccpayment.com/ccpayment/v2/`.
 
-**Description:** Get Order order details.
+## Endpoint List
 
-**Request Parameters:**
+- `/getAppOrderInfo` -> `GetAppOrderInfo` (Retrieve order details)
+- `/createInvoiceUrl` -> `CreateInvoiceUrl` (CreateInvoiceUrl)
+- `/getInvoiceOrderInfo` -> `GetInvoiceOrderInfo` (Retrieve invoice order details)
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| orderId | string | Yes | Order ID | Length ≥1 |
+## Interface Details
 
-**Response Data:**
+### GetAppOrderInfo
 
-| Field | Type | Description |
-|------|------|------|
-| amountToPay | string | Amount to pay |
-| coinId | uint64 | Token ID |
-| coinSymbol | string | Token symbol |
-| chain | string | Chain name |
-| toAddress | string | Receiving address |
-| toMemo | string | Memo |
-| createAt | int64 | Creation time |
-| rate | string | Exchange rate |
-| fiatId | uint64 | Fiat currency ID |
-| fiatSymbol | string | Fiat currency symbol |
-| expiredAt | int64 | Expiration time |
-| checkoutUrl | string | Checkout URL |
-| buyerEmail | string | Buyer email |
-| paidList | Array | Paid list |
-| paidList[].recordId | string | Record ID |
-| paidList[].fromAddress | string | Source address |
-| paidList[].amount | string | Amount |
-| paidList[].serviceFee | string | Service fee |
-| paidList[].txid | string | Transaction hash |
-| paidList[].status | string | Status |
-| paidList[].arrivedAt | int64 | Arrival time |
-| paidList[].rate | string | Exchange rate |
-| paidList[].isFlaggedAsRisky | bool | Whether marked as risky |
+- HTTP: `POST /getAppOrderInfo`
+- Request Type: `GetAppOrderInfoReq`
+- Response Type: `GetAppOrderInfoReply`
+- Description: Retrieve order details
 
-## 10.2 Create Invoice URL
+#### Request Parameters
 
-**Interface:** `POST /createInvoiceUrl`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
 
-**Description:** Create an Invoice order and generate a payment URL.
+#### Response Data
 
-**Request Parameters:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `amountToPay` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `coinSymbol` | `string` | No |  |
+| `chain` | `string` | No |  |
+| `toAddress` | `string` | No |  |
+| `toMemo` | `string` | No |  |
+| `createAt` | `int64` | No |  |
+| `rate` | `string` | No |  |
+| `fiatId` | `uint64` | No |  |
+| `fiatSymbol` | `string` | No |  |
+| `expiredAt` | `int64` | No |  |
+| `checkoutUrl` | `string` | No |  |
+| `buyerEmail` | `string` | No |  |
+| `paidList` | `PayInfo[]` | No |  |
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| orderId | string | Yes | Order ID | Length 3-64 |
-| product | string | Yes | Product description | Length ≥1 |
-| priceFiatId | uint64 | No | Fiat currency ID | - |
-| priceCoinId | uint64 | No | Token ID | - |
-| price | string | Yes | Price | Length ≥1 |
-| buyerEmail | string | No | Buyer email | Email format |
-| returnUrl | string | No | Return URL | Max 150 characters, URI format |
-| expiredAt | int64 | No | Expiration timestamp | ≥1 |
-| closeUrl | string | No | Close URL | Max 150 characters, URI format |
-| notifyUrl | string | No | Notification URL | Max 150 characters, URI format |
+### CreateInvoiceUrl
 
-**Response Data:**
+- HTTP: `POST /createInvoiceUrl`
+- Request Type: `CreateInvoiceUrlReq`
+- Response Type: `CreateInvoiceUrlReply`
+- Description: CreateInvoiceUrl
 
-| Field | Type | Description |
-|------|------|------|
-| invoiceUrl | string | Invoice payment URL |
+#### Request Parameters
 
-## 10.3 Get Invoice Order Info
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `product` | `string` | No | [(validate.rules).string={ignore_empty: true, gte: 1}] ; validation: `(validate.rules).string = {ignore_empty: true,min_len: 1, max_len:128}` |
+| `priceFiatId` | `uint64` | No |  |
+| `priceCoinId` | `uint64` | No |  |
+| `price` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `buyerEmail` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:120, email:true}` |
+| `returnUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
+| `expiredAt` | `int64` | No | Order expiration time. Defaults to 24 hours if omitted. ; validation: `(validate.rules).int64 = {ignore_empty: true, gte: 1}` |
+| `closeUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
+| `notifyUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
 
-**Interface:** `POST /getInvoiceOrderInfo`
+#### Response Data
 
-**Description:** Get Invoice order details.
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `invoiceUrl` | `string` | No |  |
 
-**Request Parameters:**
+### GetInvoiceOrderInfo
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| orderId | string | Yes | Order ID | Length ≥1 |
+- HTTP: `POST /getInvoiceOrderInfo`
+- Request Type: `GetInvoiceOrderInfoReq`
+- Response Type: `GetInvoiceOrderInfoReply`
+- Description: Retrieve invoice order details
 
-**Response Data:**
+#### Request Parameters
 
-| Field | Type | Description |
-|------|------|------|
-| orderId | string | Order ID |
-| createAt | int64 | Creation time |
-| product | string | Product description |
-| price | string | Price |
-| priceCoinId | uint64 | Token ID |
-| priceFiatId | uint64 | Fiat currency ID |
-| priceSymbol | string | Price symbol |
-| invoiceUrl | string | Invoice URL |
-| buyerEmail | string | Buyer email |
-| expiredAt | int64 | Expiration time |
-| totalPaidValue | string | Total paid value |
-| paidList | Array | Paid list |
-| paidList[].recordId | string | Record ID |
-| paidList[].coinId | uint64 | Token ID |
-| paidList[].coinSymbol | string | Token symbol |
-| paidList[].chain | string | Chain name |
-| paidList[].fromAddress | string | Source address |
-| paidList[].toAddress | string | Receiving address |
-| paidList[].toMemo | string | Memo |
-| paidList[].paidAmount | string | Paid amount |
-| paidList[].serviceFee | string | Service fee |
-| paidList[].txid | string | Transaction hash |
-| paidList[].status | string | Status |
-| paidList[].arrivedAt | int64 | Arrival time |
-| paidList[].rate | string | Exchange rate |
-| paidList[].paidValue | string | Paid value |
-| paidList[].isFlaggedAsRisky | bool | Whether marked as risky |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
 
-## 10.4 Get Webhook Info
+#### Response Data
 
-**Interface:** `POST /getWebhookInfo`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | No |  |
+| `createAt` | `int64` | No |  |
+| `product` | `string` | No |  |
+| `price` | `string` | No |  |
+| `priceCoinId` | `uint64` | No | Returned when the invoice is priced in tokens. |
+| `priceFiatId` | `uint64` | No | Returned when the invoice is priced in fiat currency. |
+| `priceSymbol` | `string` | No |  |
+| `invoiceUrl` | `string` | No | Checkout page URL |
+| `buyerEmail` | `string` | No | Buyer email; returned only when provided. |
+| `expiredAt` | `int64` | No | Order expiration time. Defaults to 24 hours if not provided. |
+| `totalPaidValue` | `string` | No | Total paid value, in the pricing currency. |
+| `paidList` | `GetInvoiceOrderInfoReply.PayInfo[]` | No | Only paid transaction entries are returned. |
 
-**Description:** Get merchant's Webhook configuration information.
+## Data Models
 
-**Request Parameters:** None
+### GetAppOrderInfoReq
 
-**Response Data:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
 
-| Field | Type | Description |
-|------|------|------|
-| webhookUrl | string | Webhook URL |
-| webhookSecret | string | Webhook secret |
+### GetAppOrderInfoReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `amountToPay` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `coinSymbol` | `string` | No |  |
+| `chain` | `string` | No |  |
+| `toAddress` | `string` | No |  |
+| `toMemo` | `string` | No |  |
+| `createAt` | `int64` | No |  |
+| `rate` | `string` | No |  |
+| `fiatId` | `uint64` | No |  |
+| `fiatSymbol` | `string` | No |  |
+| `expiredAt` | `int64` | No |  |
+| `checkoutUrl` | `string` | No |  |
+| `buyerEmail` | `string` | No |  |
+| `paidList` | `PayInfo[]` | No |  |
+
+### PayInfo
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `fromAddress` | `string` | No |  |
+| `amount` | `string` | No |  |
+| `serviceFee` | `string` | No |  |
+| `txid` | `string` | No |  |
+| `status` | `string` | No |  |
+| `arrivedAt` | `int64` | No |  |
+| `rate` | `string` | No |  |
+| `isFlaggedAsRisky` | `bool` | No |  |
+
+### CreateInvoiceUrlReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `product` | `string` | No | [(validate.rules).string={ignore_empty: true, gte: 1}] ; validation: `(validate.rules).string = {ignore_empty: true,min_len: 1, max_len:128}` |
+| `priceFiatId` | `uint64` | No |  |
+| `priceCoinId` | `uint64` | No |  |
+| `price` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `buyerEmail` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:120, email:true}` |
+| `returnUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
+| `expiredAt` | `int64` | No | Order expiration time. Defaults to 24 hours if omitted. ; validation: `(validate.rules).int64 = {ignore_empty: true, gte: 1}` |
+| `closeUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
+| `notifyUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
+
+### CreateInvoiceUrlReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `invoiceUrl` | `string` | No |  |
+
+### GetInvoiceOrderInfoReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+
+### GetInvoiceOrderInfoReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | No |  |
+| `createAt` | `int64` | No |  |
+| `product` | `string` | No |  |
+| `price` | `string` | No |  |
+| `priceCoinId` | `uint64` | No | Returned when the invoice is priced in tokens. |
+| `priceFiatId` | `uint64` | No | Returned when the invoice is priced in fiat currency. |
+| `priceSymbol` | `string` | No |  |
+| `invoiceUrl` | `string` | No | Checkout page URL |
+| `buyerEmail` | `string` | No | Buyer email; returned only when provided. |
+| `expiredAt` | `int64` | No | Order expiration time. Defaults to 24 hours if not provided. |
+| `totalPaidValue` | `string` | No | Total paid value, in the pricing currency. |
+| `paidList` | `GetInvoiceOrderInfoReply.PayInfo[]` | No | Only paid transaction entries are returned. |
+
+### GetInvoiceOrderInfoReply.PayInfo
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `coinSymbol` | `string` | No |  |
+| `chain` | `string` | No |  |
+| `fromAddress` | `string` | No | Source address |
+| `toAddress` | `string` | No | Receiving address |
+| `toMemo` | `string` | No |  |
+| `paidAmount` | `string` | No | Amount paid in the settlement token |
+| `serviceFee` | `string` | No | Service fee |
+| `txid` | `string` | No |  |
+| `status` | `string` | No |  |
+| `arrivedAt` | `int64` | No | Arrival time |
+| `rate` | `string` | No | USD price of the paid token divided by the USD price of the pricing currency |
+| `paidValue` | `string` | No | Paid value, in the pricing currency. |
+| `isFlaggedAsRisky` | `bool` | No |  |

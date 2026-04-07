@@ -1,181 +1,345 @@
-# Merchant Batch Withdrawal Module
+# Merchant Batch Withdraw Module
 
-## 5.1 Check Withdrawal Address
+Last Updated: 2026-04-07
 
-**Interface:** `POST /checkWithdrawAddress`
+All HTTP interfaces in this file are synchronized from the CCPayment API v2 definitions. Every route uses `POST` and the base URL is `https://ccpayment.com/ccpayment/v2/`.
 
-**Description:** Check the validity of withdrawal addresses in batch.
+## Endpoint List
 
-**Request Parameters:**
+- `/checkWithdrawAddress` -> `CheckWithdrawAddress` (-------------------------batch withdraw---------------------------------------)
+- `/applyBatchWithdraw` -> `ApplyBatchWithdraw` (No proto comment.)
+- `/appendBatchWithdraw` -> `AppendBatchWithdraw` (No proto comment.)
+- `/confirmBatchWithdraw` -> `ConfirmBatchWithdraw` (No proto comment.)
+- `/abortBatchWithdraw` -> `AbortBatchWithdraw` (No proto comment.)
+- `/getBatchWithdrawOrder` -> `GetBatchWithdrawOrder` (No proto comment.)
+- `/getBatchWithdrawOrderRecordList` -> `GetBatchWithdrawOrderRecordList` (No proto comment.)
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| chain | string | Yes | Chain name | Length ≥1 |
-| addressInfoList | Array | Yes | Address information list | 1-500 items |
-| addressInfoList[].address | string | Yes | Address | Length ≥1 |
-| addressInfoList[].memo | string | No | Memo | - |
-| addressInfoList[].seq | uint32 | Yes | Sequence number | ≥1 |
-| addressInfoList[].codes | Array<int32> | No | Error codes | - |
+## Interface Details
 
-**Response Data:**
+### CheckWithdrawAddress
 
-| Field | Type | Description |
-|------|------|------|
-| addressInfoResults | Array | Address check results |
-| addressInfoResults[].seq | uint32 | Sequence number |
-| addressInfoResults[].codes | Array<int32> | Error code list (empty means valid) |
+- HTTP: `POST /checkWithdrawAddress`
+- Request Type: `CheckWithdrawAddressReq`
+- Response Type: `CheckWithdrawAddressReply`
+- Description: -------------------------batch withdraw---------------------------------------
 
-## 5.2 Apply Batch Withdrawal
+#### Request Parameters
 
-**Interface:** `POST /applyBatchWithdraw`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `addressInfoList` | `WithdrawAddress[]` | Yes | validation: `(validate.rules).repeated.min_items = 1,(validate.rules).repeated.max_items = 500` |
 
-**Description:** Create a batch withdrawal order.
+#### Response Data
 
-**Request Parameters:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `addressInfoResults` | `WithdrawAddressResult[]` | No | address -- result |
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| batchOrderId | string | Yes | Batch order ID | Length 3-64 |
-| coinId | uint64 | Yes | Token ID | ≥1 |
-| chain | string | Yes | Chain name | Length ≥1 |
-| productName | string | No | Product name | - |
-| orders | Array | No | Order list | 0-500 items |
-| orders[].seq | uint32 | Yes | Sequence number | >0 |
-| orders[].address | string | Yes | Address | Length ≥1 |
-| orders[].memo | string | No | Memo | Max 16 characters |
-| orders[].amount | string | Yes | Amount | Length ≥1 |
-| orders[].remark | string | No | Remark | Max 64 characters |
-| mode | string | Yes | Execution mode (Single/Batch) | Length ≥1 |
-| notifyUrl | string | No | Notification URL | Max 120 characters, URI format |
+### ApplyBatchWithdraw
 
-**Response Data:**
+- HTTP: `POST /applyBatchWithdraw`
+- Request Type: `ApplyBatchWithdrawReq`
+- Response Type: `ApplyBatchWithdrawReply`
 
-| Field | Type | Description |
-|------|------|------|
-| batchOrderId | string | Batch order ID |
-| billId | string | Bill ID |
+#### Request Parameters
 
-## 5.3 Append Batch Withdrawal
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `chain` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `productName` | `string` | No |  |
+| `orders` | `BatchWithdrawTaskEntity[]` | No | validation: `(validate.rules).repeated.min_items = 0,(validate.rules).repeated.max_items = 500` |
+| `mode` | `string` | Yes | `Single|Batch`; execution mode: single transaction or batched submission ; validation: `(validate.rules).string.min_len = 1` |
+| `notifyUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:120, uri:true}` |
 
-**Interface:** `POST /appendBatchWithdraw`
+#### Response Data
 
-**Description:** Append tasks to an existing batch withdrawal order.
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | No |  |
+| `billId` | `string` | No |  |
 
-**Request Parameters:**
+### AppendBatchWithdraw
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| batchOrderId | string | Yes | Batch order ID | Length 3-64 |
-| orders | Array | Yes | Order list | 1-500 items |
+- HTTP: `POST /appendBatchWithdraw`
+- Request Type: `AppendBatchWithdrawReq`
+- Response Type: `AppendBatchWithdrawReply`
 
-**Response Data:** Empty object
+#### Request Parameters
 
-## 5.4 Confirm Batch Withdrawal
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `orders` | `BatchWithdrawTaskEntity[]` | Yes | validation: `(validate.rules).repeated.min_items = 1,(validate.rules).repeated.max_items = 500` |
 
-**Interface:** `POST /confirmBatchWithdraw`
+#### Response Data
 
-**Description:** Confirm and execute the batch withdrawal order.
+No fields defined.
 
-**Request Parameters:**
+### ConfirmBatchWithdraw
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| batchOrderId | string | Yes | Batch order ID | Length 3-64 |
-| delaySeconds | int64 | No | Delay execution time (seconds) | 0-3600 |
+- HTTP: `POST /confirmBatchWithdraw`
+- Request Type: `ConfirmBatchWithdrawReq`
+- Response Type: `BatchWithdrawOrder`
 
-**Response Data:**
+#### Request Parameters
 
-| Field | Type | Description |
-|------|------|------|
-| batchOrderId | string | Batch order ID |
-| productName | string | Product name |
-| billId | string | Bill ID |
-| coin | Object | Token information |
-| coin.coin_id | uint64 | Token ID |
-| coin.coin_symbol | string | Token symbol |
-| coin.coin_price | string | Token price |
-| amount | string | Total amount |
-| networkFee | string | Network fee |
-| networkFeeCoin | Object | Fee token information |
-| status | string | Status (Init/Reviewing/Rejected/Pending/Processing/Completed) |
-| reason | string | Reason |
-| mode | string | Execution mode |
-| stats | Object | Statistics |
-| stats.total | int32 | Total count |
-| stats.succeeded | int32 | Succeeded count |
-| stats.failed | int32 | Failed count |
-| stats.canceled | int32 | Canceled count |
-| stats.processing | int32 | Processing count |
-| stats.execSeq | uint32 | Executed sequence |
-| createdAt | int64 | Creation time |
-| updatedAt | int64 | Update time |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `delaySeconds` | `int64` | No | validation: `(validate.rules).int64 = {ignore_empty: true, gte: 0, lte:3600}` |
 
-## 5.5 Cancel Batch Withdrawal
+#### Response Data
 
-**Interface:** `POST /abortBatchWithdraw`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | No |  |
+| `productName` | `string` | No |  |
+| `billId` | `string` | No |  |
+| `coin` | `Coin` | No |  |
+| `amount` | `string` | No |  |
+| `networkFee` | `string` | No |  |
+| `networkFeeCoin` | `Coin` | No |  |
+| `status` | `string` | No | "Init|Reviewing｜Rejected|Pending|Processing|Completed", |
+| `reason` | `string` | No |  |
+| `mode` | `string` | No |  |
+| `stats` | `BatchWithdrawStats` | No |  |
+| `createdAt` | `int64` | No |  |
+| `updatedAt` | `int64` | No |  |
 
-**Description:** Cancel the batch withdrawal order or part of the tasks.
+### AbortBatchWithdraw
 
-**Request Parameters:**
+- HTTP: `POST /abortBatchWithdraw`
+- Request Type: `AbortBatchWithdrawReq`
+- Response Type: `AbortBatchWithdrawReply`
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| batchOrderId | string | Yes | Batch order ID | Length 3-64 |
-| seqs | Array<uint32> | No | List of sequence numbers to cancel | 0-500 items |
+#### Request Parameters
 
-**Response Data:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `seqs` | `uint32[]` | No | When `execMode=batch`, this applies to `reviewing` and `pending`; when `execMode=single`, it applies to `reviewing`, `pending`, and `processing`. Optional. ; validation: `(validate.rules).repeated.min_items = 0,(validate.rules).repeated.max_items = 500` |
 
-| Field | Type | Description |
-|------|------|------|
-| batchOrderId | string | Batch order ID |
-| canceledSeqs | Array<uint32> | Canceled sequence numbers |
-| ignoredSeqs | Array<uint32> | Ignored sequence numbers |
+#### Response Data
 
-## 5.6 Get Batch Withdrawal Order
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `canceledSeqs` | `uint32[]` | No | If the list below is empty, the entire batch order was canceled successfully. ; Canceled sequence IDs |
+| `ignoredSeqs` | `uint32[]` | No | Ignored sequence IDs that were already completed or already submitted to the fund service (`Successful|Processing`). |
 
-**Interface:** `POST /getBatchWithdrawOrder`
+### GetBatchWithdrawOrder
 
-**Description:** Query batch withdrawal order details.
+- HTTP: `POST /getBatchWithdrawOrder`
+- Request Type: `GetBatchWithdrawOrderReq`
+- Response Type: `BatchWithdrawOrder`
 
-**Request Parameters:**
+#### Request Parameters
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| batchOrderId | string | Yes | Batch order ID | Length 3-64 |
-| verbose | uint32 | No | Verbosity level (0-3) | 0-3 |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `verbose` | `uint32` | No | validation: `(validate.rules).uint32 = {ignore_empty: true, gte: 0, lte:3}` |
 
-**Response Data:** Same as confirmBatchWithdraw
+#### Response Data
 
-## 5.7 Get Batch Withdrawal Record List
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | No |  |
+| `productName` | `string` | No |  |
+| `billId` | `string` | No |  |
+| `coin` | `Coin` | No |  |
+| `amount` | `string` | No |  |
+| `networkFee` | `string` | No |  |
+| `networkFeeCoin` | `Coin` | No |  |
+| `status` | `string` | No | "Init|Reviewing｜Rejected|Pending|Processing|Completed", |
+| `reason` | `string` | No |  |
+| `mode` | `string` | No |  |
+| `stats` | `BatchWithdrawStats` | No |  |
+| `createdAt` | `int64` | No |  |
+| `updatedAt` | `int64` | No |  |
 
-**Interface:** `POST /getBatchWithdrawOrderRecordList`
+### GetBatchWithdrawOrderRecordList
 
-**Description:** Query the task record list of a batch withdrawal order.
+- HTTP: `POST /getBatchWithdrawOrderRecordList`
+- Request Type: `GetBatchWithdrawOrderRecordListReq`
+- Response Type: `GetBatchWithdrawOrderRecordListReply`
 
-**Request Parameters:**
+#### Request Parameters
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| batchOrderId | string | Yes | Batch order ID | Length 3-64 |
-| nextId | string | No | Next page ID | - |
-| limit | uint64 | No | Items per page | ≤100 |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `nextId` | `string` | No | Next-page cursor |
+| `limit` | `uint64` | No | Next-page cursor ; validation: `(validate.rules).uint64 = {lte: 100}` |
 
-**Response Data:**
+#### Response Data
 
-| Field | Type | Description |
-|------|------|------|
-| nextId | string | Next page ID |
-| records | Array | Task record list |
-| records[].seq | uint32 | Sequence number |
-| records[].address | string | Address |
-| records[].memo | string | Memo |
-| records[].amount | string | Amount |
-| records[].remark | string | Remark |
-| records[].recordId | string | Record ID |
-| records[].orderId | string | Order ID |
-| records[].status | string | Status |
-| records[].networkFee | string | Network fee |
-| records[].txId | string | Transaction hash |
-| records[].reason | string | Reason |
-| records[].createdAt | int64 | Creation time |
-| records[].updatedAt | int64 | Update time |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `nextId` | `string` | No | Next-page cursor |
+| `records` | `BatchWithdrawTaskEntity[]` | No |  |
+
+## Data Models
+
+### CheckWithdrawAddressReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `addressInfoList` | `WithdrawAddress[]` | Yes | validation: `(validate.rules).repeated.min_items = 1,(validate.rules).repeated.max_items = 500` |
+
+### WithdrawAddress
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `address` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `memo` | `string` | No |  |
+| `seq` | `uint32` | Yes | validation: `(validate.rules).uint32.gte = 1` |
+| `codes` | `int32[]` | No |  |
+
+### CheckWithdrawAddressReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `addressInfoResults` | `WithdrawAddressResult[]` | No | address -- result |
+
+### WithdrawAddressResult
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `seq` | `uint32` | No |  |
+| `codes` | `int32[]` | No |  |
+
+### ApplyBatchWithdrawReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `chain` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `productName` | `string` | No |  |
+| `orders` | `BatchWithdrawTaskEntity[]` | No | validation: `(validate.rules).repeated.min_items = 0,(validate.rules).repeated.max_items = 500` |
+| `mode` | `string` | Yes | `Single|Batch`; execution mode: single transaction or batched submission ; validation: `(validate.rules).string.min_len = 1` |
+| `notifyUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:120, uri:true}` |
+
+### BatchWithdrawTaskEntity
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `seq` | `uint32` | Yes | validation: `(validate.rules).uint32.gt = 0` |
+| `address` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `memo` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:16}` |
+| `amount` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `remark` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:64}` |
+| `recordId` | `string` | No |  |
+| `orderId` | `string` | No |  |
+| `status` | `string` | No |  |
+| `networkFee` | `string` | No |  |
+| `txId` | `string` | No |  |
+| `reason` | `string` | No |  |
+| `createdAt` | `int64` | No |  |
+| `updatedAt` | `int64` | No |  |
+
+### ApplyBatchWithdrawReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | No |  |
+| `billId` | `string` | No |  |
+
+### AppendBatchWithdrawReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `orders` | `BatchWithdrawTaskEntity[]` | Yes | validation: `(validate.rules).repeated.min_items = 1,(validate.rules).repeated.max_items = 500` |
+
+### AppendBatchWithdrawReply
+
+No fields defined.
+
+### ConfirmBatchWithdrawReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `delaySeconds` | `int64` | No | validation: `(validate.rules).int64 = {ignore_empty: true, gte: 0, lte:3600}` |
+
+### BatchWithdrawOrder
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | No |  |
+| `productName` | `string` | No |  |
+| `billId` | `string` | No |  |
+| `coin` | `Coin` | No |  |
+| `amount` | `string` | No |  |
+| `networkFee` | `string` | No |  |
+| `networkFeeCoin` | `Coin` | No |  |
+| `status` | `string` | No | "Init|Reviewing｜Rejected|Pending|Processing|Completed", |
+| `reason` | `string` | No |  |
+| `mode` | `string` | No |  |
+| `stats` | `BatchWithdrawStats` | No |  |
+| `createdAt` | `int64` | No |  |
+| `updatedAt` | `int64` | No |  |
+
+### Coin
+
+Network token information
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coin_id` | `uint64` | No | Token ID |
+| `coin_symbol` | `string` | No | Token symbol |
+| `coin_price` | `string` | No |  |
+
+### BatchWithdrawStats
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `total` | `int32` | No | Total transaction count |
+| `succeeded` | `int32` | No | Succeeded count |
+| `failed` | `int32` | No | Failed count |
+| `canceled` | `int32` | No | Canceled count |
+| `processing` | `int32` | No | In progress |
+| `execSeq` | `uint32` | No | Last executed sequence number |
+
+### AbortBatchWithdrawReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `seqs` | `uint32[]` | No | When `execMode=batch`, this applies to `reviewing` and `pending`; when `execMode=single`, it applies to `reviewing`, `pending`, and `processing`. Optional. ; validation: `(validate.rules).repeated.min_items = 0,(validate.rules).repeated.max_items = 500` |
+
+### AbortBatchWithdrawReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `canceledSeqs` | `uint32[]` | No | If the list below is empty, the entire batch order was canceled successfully. ; Canceled sequence IDs |
+| `ignoredSeqs` | `uint32[]` | No | Ignored sequence IDs that were already completed or already submitted to the fund service (`Successful|Processing`). |
+
+### GetBatchWithdrawOrderReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `verbose` | `uint32` | No | validation: `(validate.rules).uint32 = {ignore_empty: true, gte: 0, lte:3}` |
+
+### GetBatchWithdrawOrderRecordListReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `batchOrderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `nextId` | `string` | No | Next-page cursor |
+| `limit` | `uint64` | No | Next-page cursor ; validation: `(validate.rules).uint64 = {lte: 100}` |
+
+### GetBatchWithdrawOrderRecordListReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `nextId` | `string` | No | Next-page cursor |
+| `records` | `BatchWithdrawTaskEntity[]` | No |  |

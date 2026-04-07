@@ -1,178 +1,398 @@
-# Merchant Withdrawal Module
+# Merchant Withdraw Module
 
-## 4.1 Withdraw to Network Address
+Last Updated: 2026-04-07
 
-**Interface:** `POST /applyAppWithdrawToNetwork`
+All HTTP interfaces in this file are synchronized from the CCPayment API v2 definitions. Every route uses `POST` and the base URL is `https://ccpayment.com/ccpayment/v2/`.
 
-**Description:** Apply for withdrawal to a blockchain network address.
+## Endpoint List
 
-**Request Parameters:**
+- `/getCwalletUserId` -> `GetCwalletUserId` (Retrieve a CWallet user)
+- `/getWithdrawFee` -> `GetWithdrawFee` (Withdrawal fee)
+- `/applyAppWithdrawToNetwork` -> `ApplyAppWithdrawToNetwork` (Withdraw to an external network)
+- `/applyAppWithdrawToCwallet` -> `ApplyAppWithdrawToCwallet` (Withdraw to CWallet)
+- `/getAppWithdrawRecord` -> `GetAppWithdrawRecord` (Query a withdrawal record)
+- `/getAppWithdrawRecordList` -> `GetAppWithdrawRecordList` (Query withdrawal history)
+- `/getAutoWithdrawRecordList` -> `GetAutoWithdrawRecordList` (No proto comment.)
+- `/getRiskyRefundRecordList` -> `GetRiskRefundRecords` (No proto comment.)
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| orderId | string | Yes | Order ID | Length 3-64 |
-| coinId | uint64 | Yes | Token ID | ≥1 |
-| chain | string | Yes | Chain name | Length ≥1 |
-| address | string | Yes | Withdrawal address | Length ≥1 |
-| memo | string | No | Memo | - |
-| amount | string | Yes | Withdrawal amount | Length ≥1 |
-| merchantPayNetworkFee | bool | No | Whether merchant pays network fee | - |
-| networkFeeInquiryID | string | No | Network fee inquiry ID | - |
-| notifyUrl | string | No | Notification URL | Max 150 characters, URI format |
+## Interface Details
 
-**Response Data:**
+### GetCwalletUserId
 
-| Field | Type | Description |
-|------|------|------|
-| recordId | string | Withdrawal record ID |
+- HTTP: `POST /getCwalletUserId`
+- Request Type: `GetCwalletUserIdReq`
+- Response Type: `GetCwalletUserIdReply`
+- Description: Retrieve a CWallet user
 
-## 4.2 Withdraw to CCWallet
+#### Request Parameters
 
-**Interface:** `POST /applyAppWithdrawToCwallet`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `cwalletUserId` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
 
-**Description:** Apply for withdrawal to a CCWallet account.
+#### Response Data
 
-**Request Parameters:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `cwalletUserId` | `string` | No |  |
+| `cwalletUserName` | `string` | No |  |
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| orderId | string | Yes | Order ID | Length 3-64 |
-| coinId | uint64 | Yes | Token ID | ≥1 |
-| cwalletUser | string | Yes | CCWallet user (email/ID) | Length ≥1 |
-| amount | string | Yes | Withdrawal amount | Length ≥1 |
+### GetWithdrawFee
 
-**Response Data:**
+- HTTP: `POST /getWithdrawFee`
+- Request Type: `GetWithdrawFeeReq`
+- Response Type: `GetWithdrawFeeReply`
+- Description: Withdrawal fee
 
-| Field | Type | Description |
-|------|------|------|
-| recordId | string | Withdrawal record ID |
+#### Request Parameters
 
-## 4.3 Query Withdrawal Record
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `chain` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
 
-**Interface:** `POST /getAppWithdrawRecord`
+#### Response Data
 
-**Description:** Query details of a single withdrawal record.
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `fee` | `WithdrawFee` | No |  |
+| `networkFeeInquiryID` | `string` | No |  |
 
-**Request Parameters:**
+### ApplyAppWithdrawToNetwork
 
-| Field | Type | Required | Description |
-|------|------|------|------|
-| orderId | string | No | Order ID |
-| recordId | string | No | Record ID |
+- HTTP: `POST /applyAppWithdrawToNetwork`
+- Request Type: `ApplyAppWithdrawToNetworkReq`
+- Response Type: `ApplyAppWithdrawReply`
+- Description: Withdraw to an external network
 
-**Response Data:**
+#### Request Parameters
 
-| Field | Type | Description |
-|------|------|------|
-| record | Object | Withdrawal record |
-| record.recordId | string | Record ID |
-| record.withdrawType | string | Withdrawal type |
-| record.appId | string | Application ID |
-| record.coinId | uint64 | Token ID |
-| record.coinSymbol | string | Token symbol |
-| record.chain | string | Chain name |
-| record.fromAddress | string | Source address |
-| record.toAddress | string | Target address |
-| record.cwalletUser | string | CCWallet user |
-| record.orderId | string | Order ID |
-| record.txId | string | Transaction hash (optional) |
-| record.toMemo | string | Memo (optional) |
-| record.status | string | Status |
-| record.amount | string | Amount |
-| record.fee | Object | Fee information |
-| record.fee.coinId | uint64 | Token ID |
-| record.fee.coinSymbol | string | Token symbol |
-| record.fee.amount | string | Fee amount |
-| record.reason | string | Reason (optional) |
-| record.coinUSDPrice | string | Token USD price |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `chain` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `address` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `memo` | `string` | No |  |
+| `amount` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `merchantPayNetworkFee` | `bool` | No |  |
+| `networkFeeInquiryID` | `string` | No |  |
+| `notifyUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
 
-## 4.4 Query Withdrawal Record List
+#### Response Data
 
-**Interface:** `POST /getAppWithdrawRecordList`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
 
-**Description:** Query withdrawal record list.
+### ApplyAppWithdrawToCwallet
 
-**Request Parameters:**
+- HTTP: `POST /applyAppWithdrawToCwallet`
+- Request Type: `ApplyAppWithdrawToCwalletReq`
+- Response Type: `ApplyAppWithdrawReply`
+- Description: Withdraw to CWallet
 
-| Field | Type | Required | Description |
-|------|------|------|------|
-| chain | string | No | Chain name |
-| coinId | uint64 | No | Token ID |
-| orderIds | Array<string> | No | Order ID list |
-| startAt | int64 | No | Start time (default 90 days) |
-| endAt | int64 | No | End time |
-| toAddress | string | No | Target address |
-| nextId | string | No | Next page ID |
+#### Request Parameters
 
-**Response Data:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `cwalletUser` | `string` | Yes | Email address / CWallet ID ; validation: `(validate.rules).string.min_len = 1` |
+| `amount` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
 
-| Field | Type | Description |
-|------|------|------|
-| records | Array | Withdrawal record list (same structure as getAppWithdrawRecord) |
-| nextId | string | Next page ID (optional) |
+#### Response Data
 
-## 4.5 Query Auto Withdrawal Record List
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
 
-**Interface:** `POST /getAutoWithdrawRecordList`
+### GetAppWithdrawRecord
 
-**Description:** Query automatic withdrawal record list.
+- HTTP: `POST /getAppWithdrawRecord`
+- Request Type: `GetAppWithdrawRecordReq`
+- Response Type: `GetAppWithdrawRecordReply`
+- Description: Query a withdrawal record
 
-**Request Parameters:**
+#### Request Parameters
 
-| Field | Type | Required | Description |
-|------|------|------|------|
-| chain | string | No | Chain name |
-| coinId | uint64 | No | Token ID |
-| recordIds | Array<string> | No | Record ID list |
-| startAt | int64 | No | Start time (default 90 days) |
-| endAt | int64 | No | End time |
-| toAddress | string | No | Target address |
-| nextId | string | No | Next page ID |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | No |  |
+| `recordId` | `string` | No |  |
 
-**Response Data:**
+#### Response Data
 
-| Field | Type | Description |
-|------|------|------|
-| records | Array | Automatic withdrawal record list |
-| records[].recordId | string | Record ID |
-| records[].coinId | uint64 | Token ID |
-| records[].coinSymbol | string | Token symbol |
-| records[].chain | string | Chain name |
-| records[].orderId | string | Order ID |
-| records[].toAddress | string | Target address |
-| records[].toMemo | string | Memo (optional) |
-| records[].amount | string | Amount |
-| records[].txId | string | Transaction hash (optional) |
-| records[].status | string | Status |
-| records[].fee | Object | Fee information |
-| records[].serviceFee | string | Service fee |
-| records[].createdAt | int64 | Creation time |
-| nextId | string | Next page ID (optional) |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `record` | `AppWithdrawRecordEntity` | No |  |
 
-## 4.6 Query Risky Refund Record List
+### GetAppWithdrawRecordList
 
-**Interface:** `POST /getRiskyRefundRecordList`
+- HTTP: `POST /getAppWithdrawRecordList`
+- Request Type: `GetAppWithdrawRecordListReq`
+- Response Type: `GetAppWithdrawRecordListReply`
+- Description: Query withdrawal history
 
-**Description:** Query risky refund record list.
+#### Request Parameters
 
-**Request Parameters:** Same as getAutoWithdrawRecordList
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `orderIds` | `string[]` | No |  |
+| `startAt` | `int64` | No | Defaults to the last 90 days |
+| `endAt` | `int64` | No |  |
+| `toAddress` | `string` | No |  |
+| `nextId` | `string` | No |  |
 
-**Response Data:**
+#### Response Data
 
-| Field | Type | Description |
-|------|------|------|
-| records | Array | Risky refund record list |
-| records[].recordId | string | Record ID |
-| records[].coinId | uint64 | Token ID |
-| records[].coinSymbol | string | Token symbol |
-| records[].chain | string | Chain name |
-| records[].orderId | string | Order ID |
-| records[].toAddress | string | Target address |
-| records[].toMemo | string | Memo (optional) |
-| records[].amount | string | Amount |
-| records[].txId | string | Transaction hash (optional) |
-| records[].status | string | Status |
-| records[].fee | Object | Fee information |
-| records[].createdAt | int64 | Creation time |
-| records[].fromDeposit | Array | Source deposit records |
-| nextId | string | Next page ID (optional) |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `AppWithdrawRecordEntity[]` | No |  |
+| `nextId` | `string` | No |  |
+
+### GetAutoWithdrawRecordList
+
+- HTTP: `POST /getAutoWithdrawRecordList`
+- Request Type: `GetAutoWithdrawRecordListReq`
+- Response Type: `GetAutoWithdrawRecordListReply`
+
+#### Request Parameters
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `recordIds` | `string[]` | No |  |
+| `startAt` | `int64` | No | Defaults to the last 90 days |
+| `endAt` | `int64` | No |  |
+| `toAddress` | `string` | No |  |
+| `nextId` | `string` | No |  |
+
+#### Response Data
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `AutoWithdrawRecordEntity[]` | No |  |
+| `nextId` | `string` | No |  |
+
+### GetRiskRefundRecords
+
+- HTTP: `POST /getRiskyRefundRecordList`
+- Request Type: `GetAutoWithdrawRecordListReq`
+- Response Type: `GetRiskWithdrawRecordListReply`
+
+#### Request Parameters
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `recordIds` | `string[]` | No |  |
+| `startAt` | `int64` | No | Defaults to the last 90 days |
+| `endAt` | `int64` | No |  |
+| `toAddress` | `string` | No |  |
+| `nextId` | `string` | No |  |
+
+#### Response Data
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `RiskWithdrawRecordEntity[]` | No |  |
+| `nextId` | `string` | No |  |
+
+## Data Models
+
+### GetCwalletUserIdReq
+
+Check or retrieve a CWallet user
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `cwalletUserId` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+
+### GetCwalletUserIdReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `cwalletUserId` | `string` | No |  |
+| `cwalletUserName` | `string` | No |  |
+
+### GetWithdrawFeeReq
+
+Retrieve the network fee
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `chain` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+
+### GetWithdrawFeeReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `fee` | `WithdrawFee` | No |  |
+| `networkFeeInquiryID` | `string` | No |  |
+
+### WithdrawFee
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coinId` | `uint64` | No |  |
+| `coinSymbol` | `string` | No |  |
+| `amount` | `string` | No |  |
+
+### ApplyAppWithdrawToNetworkReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `chain` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `address` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `memo` | `string` | No |  |
+| `amount` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `merchantPayNetworkFee` | `bool` | No |  |
+| `networkFeeInquiryID` | `string` | No |  |
+| `notifyUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
+
+### ApplyAppWithdrawReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+
+### ApplyAppWithdrawToCwalletReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `cwalletUser` | `string` | Yes | Email address / CWallet ID ; validation: `(validate.rules).string.min_len = 1` |
+| `amount` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+
+### GetAppWithdrawRecordReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | No |  |
+| `recordId` | `string` | No |  |
+
+### GetAppWithdrawRecordReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `record` | `AppWithdrawRecordEntity` | No |  |
+
+### AppWithdrawRecordEntity
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `withdrawType` | `string` | No |  |
+| `appId` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `coinSymbol` | `string` | No |  |
+| `chain` | `string` | No |  |
+| `fromAddress` | `string` | No |  |
+| `toAddress` | `string` | No |  |
+| `cwalletUser` | `string` | No |  |
+| `orderId` | `string` | No |  |
+| `txId` | `string` | No |  |
+| `toMemo` | `string` | No |  |
+| `status` | `string` | No |  |
+| `amount` | `string` | No |  |
+| `fee` | `WithdrawFee` | No |  |
+| `reason` | `string` | No |  |
+| `coinUSDPrice` | `string` | No |  |
+
+### GetAppWithdrawRecordListReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `orderIds` | `string[]` | No |  |
+| `startAt` | `int64` | No | Defaults to the last 90 days |
+| `endAt` | `int64` | No |  |
+| `toAddress` | `string` | No |  |
+| `nextId` | `string` | No |  |
+
+### GetAppWithdrawRecordListReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `AppWithdrawRecordEntity[]` | No |  |
+| `nextId` | `string` | No |  |
+
+### GetAutoWithdrawRecordListReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `recordIds` | `string[]` | No |  |
+| `startAt` | `int64` | No | Defaults to the last 90 days |
+| `endAt` | `int64` | No |  |
+| `toAddress` | `string` | No |  |
+| `nextId` | `string` | No |  |
+
+### GetAutoWithdrawRecordListReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `AutoWithdrawRecordEntity[]` | No |  |
+| `nextId` | `string` | No |  |
+
+### AutoWithdrawRecordEntity
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `coinSymbol` | `string` | No |  |
+| `chain` | `string` | No |  |
+| `orderId` | `string` | No |  |
+| `toAddress` | `string` | No |  |
+| `toMemo` | `string` | No |  |
+| `amount` | `string` | No |  |
+| `txId` | `string` | No |  |
+| `status` | `string` | No |  |
+| `fee` | `WithdrawFee` | No |  |
+| `nextId` | `string` | No |  |
+| `serviceFee` | `string` | No |  |
+| `createdAt` | `int64` | No |  |
+
+### GetRiskWithdrawRecordListReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `RiskWithdrawRecordEntity[]` | No |  |
+| `nextId` | `string` | No |  |
+
+### RiskWithdrawRecordEntity
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `coinSymbol` | `string` | No |  |
+| `chain` | `string` | No |  |
+| `orderId` | `string` | No |  |
+| `toAddress` | `string` | No |  |
+| `toMemo` | `string` | No |  |
+| `amount` | `string` | No |  |
+| `txId` | `string` | No |  |
+| `status` | `string` | No |  |
+| `fee` | `WithdrawFee` | No |  |
+| `nextId` | `string` | No |  |
+| `createdAt` | `int64` | No |  |
+| `fromDeposit` | `FromDeposit[]` | No |  |
+
+### FromDeposit
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |

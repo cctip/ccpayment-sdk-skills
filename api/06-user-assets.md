@@ -1,46 +1,90 @@
 # User Assets Module
 
-## 6.1 Get User Asset List
+Last Updated: 2026-04-07
 
-**Interface:** `POST /getUserCoinAssetList`
+All HTTP interfaces in this file are synchronized from the CCPayment API v2 definitions. Every route uses `POST` and the base URL is `https://ccpayment.com/ccpayment/v2/`.
 
-**Description:** Get all token assets of a specified user.
+## Endpoint List
 
-**Request Parameters:**
+- `/getUserCoinAssetList` -> `GetUserCoinAssetList` (Retrieve a user's asset list)
+- `/getUserCoinAsset` -> `GetUserCoinAsset` (Retrieve a user's asset balance)
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| userId | string | Yes | User ID | Length 5-64 |
+## Interface Details
 
-**Response Data:**
+### GetUserCoinAssetList
 
-| Field | Type | Description |
-|------|------|------|
-| userId | string | User ID |
-| assets | Array | Asset list |
-| assets[].coinId | uint64 | Token ID |
-| assets[].coinSymbol | string | Token symbol |
-| assets[].available | string | Available balance |
+- HTTP: `POST /getUserCoinAssetList`
+- Request Type: `GetUserCoinAssetListReq`
+- Response Type: `GetUserCoinAssetListReply`
+- Description: Retrieve a user's asset list
 
-## 6.2 Get User Asset
+#### Request Parameters
 
-**Interface:** `POST /getUserCoinAsset`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `userId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
 
-**Description:** Get a specific token asset of a specified user.
+#### Response Data
 
-**Request Parameters:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `userId` | `string` | No |  |
+| `assets` | `UserAsset[]` | No |  |
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| userId | string | Yes | User ID | Length 5-64 |
-| coinId | uint64 | Yes | Token ID | ≥1 |
+### GetUserCoinAsset
 
-**Response Data:**
+- HTTP: `POST /getUserCoinAsset`
+- Request Type: `GetUserCoinAssetReq`
+- Response Type: `GetUserCoinAssetReply`
+- Description: Retrieve a user's asset balance
 
-| Field | Type | Description |
-|------|------|------|
-| userId | string | User ID |
-| asset | Object | Asset information |
-| asset.coinId | uint64 | Token ID |
-| asset.coinSymbol | string | Token symbol |
-| asset.available | string | Available balance |
+#### Request Parameters
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `userId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+
+#### Response Data
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `userId` | `string` | No |  |
+| `asset` | `UserAsset` | No |  |
+
+## Data Models
+
+### GetUserCoinAssetListReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `userId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
+
+### GetUserCoinAssetListReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `userId` | `string` | No |  |
+| `assets` | `UserAsset[]` | No |  |
+
+### UserAsset
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coinId` | `uint64` | No |  |
+| `coinSymbol` | `string` | No |  |
+| `available` | `string` | No |  |
+
+### GetUserCoinAssetReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `userId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+
+### GetUserCoinAssetReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `userId` | `string` | No |  |
+| `asset` | `UserAsset` | No |  |

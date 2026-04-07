@@ -1,121 +1,223 @@
 # Merchant Deposit Module
 
-## 3.1 Create Order Deposit Address
+Last Updated: 2026-04-07
 
-**Interface:** `POST /createAppOrderDepositAddress`
+All HTTP interfaces in this file are synchronized from the CCPayment API v2 definitions. Every route uses `POST` and the base URL is `https://ccpayment.com/ccpayment/v2/`.
 
-**Description:** Create a deposit address for a specific order (address mode).
+## Endpoint List
 
-**Request Parameters:**
+- `/createAppOrderDepositAddress` -> `CreateAppOrderDepositAddress` (Create a deposit address for an order)
+- `/getOrCreateAppDepositAddress` -> `GetOrCreateAppDepositAddress` (Direct address mode)
+- `/getAppDepositRecord` -> `GetAppDepositRecord` (Query a deposit record)
+- `/getAppDepositRecordList` -> `GetAppDepositRecordList` (Query deposit record list)
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| orderId | string | Yes | Order ID | Length 3-64 |
-| coinId | uint64 | Yes | Token ID | ≥1 |
-| fiatId | uint64 | No | Fiat currency ID | - |
-| chain | string | Yes | Chain name | Length ≥1 |
-| price | string | Yes | Price | Length ≥1 |
-| expiredAt | int64 | No | Expiration timestamp | ≥1 |
-| buyerEmail | string | No | Buyer email | Email format |
-| generateCheckoutURL | bool | No | Whether to generate checkout URL | - |
-| product | string | No | Product name | Max 120 characters |
-| returnUrl | string | No | Return URL | Max 150 characters, URI format |
-| notifyUrl | string | No | Notification URL | Max 150 characters, URI format |
-| closeUrl | string | No | Close URL | Max 150 characters, URI format |
+## Interface Details
 
-**Response Data:**
+### CreateAppOrderDepositAddress
 
-| Field | Type | Description |
-|------|------|------|
-| address | string | Deposit address |
-| amount | string | Deposit amount |
-| memo | string | Memo (optional) |
-| checkoutUrl | string | Checkout URL (optional) |
-| confirmsNeeded | uint64 | Required confirmation count |
+- HTTP: `POST /createAppOrderDepositAddress`
+- Request Type: `CreateAppOrderDepositAddressReq`
+- Response Type: `CreateAppOrderDepositAddressReply`
+- Description: Create a deposit address for an order
 
-## 3.2 Get or Create Deposit Address
+#### Request Parameters
 
-**Interface:** `POST /getOrCreateAppDepositAddress`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `fiatId` | `uint64` | No | Fiat currency ID |
+| `chain` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `price` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `expiredAt` | `int64` | No | validation: `(validate.rules).int64 = {ignore_empty: true, gte: 1}` |
+| `buyerEmail` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, email: true}` |
+| `generateCheckoutURL` | `bool` | No |  |
+| `product` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:120}` |
+| `returnUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
+| `notifyUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
+| `closeUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
 
-**Description:** Get or create a direct deposit address (direct address mode).
+#### Response Data
 
-**Request Parameters:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `address` | `string` | No |  |
+| `amount` | `string` | No |  |
+| `memo` | `string` | No |  |
+| `checkoutUrl` | `string` | No |  |
+| `confirmsNeeded` | `uint64` | No |  |
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| referenceId | string | Yes | Reference ID | Length 3-64 |
-| chain | string | Yes | Chain name | Length ≥1 |
-| notifyUrl | string | No | Notification URL | Max 150 characters, URI format |
+### GetOrCreateAppDepositAddress
 
-**Response Data:**
+- HTTP: `POST /getOrCreateAppDepositAddress`
+- Request Type: `GetOrCreateAppDepositAddressReq`
+- Response Type: `GetOrCreateAppDepositAddressReply`
+- Description: Direct address mode
 
-| Field | Type | Description |
-|------|------|------|
-| address | string | Deposit address |
-| memo | string | Memo (optional) |
+#### Request Parameters
 
-## 3.3 Query Deposit Record
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `referenceId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `chain` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `notifyUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
 
-**Interface:** `POST /getAppDepositRecord`
+#### Response Data
 
-**Description:** Query details of a single deposit record.
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `address` | `string` | No |  |
+| `memo` | `string` | No |  |
 
-**Request Parameters:**
+### GetAppDepositRecord
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| recordId | string | Yes | Record ID | Length ≥1 |
+- HTTP: `POST /getAppDepositRecord`
+- Request Type: `GetAppDepositRecordReq`
+- Response Type: `GetAppDepositRecordReply`
+- Description: Query a deposit record
 
-**Response Data:**
+#### Request Parameters
 
-| Field | Type | Description |
-|------|------|------|
-| record | Object | Deposit record |
-| record.recordId | string | Record ID |
-| record.referenceId | string | Reference ID |
-| record.orderId | string | Order ID |
-| record.coinId | uint64 | Token ID |
-| record.coinSymbol | string | Token symbol |
-| record.chain | string | Chain name |
-| record.contract | string | Contract address |
-| record.coinUSDPrice | string | Token USD price |
-| record.fromAddress | string | Source address |
-| record.toAddress | string | Receiving address |
-| record.toMemo | string | Memo (optional) |
-| record.amount | string | Amount |
-| record.serviceFee | string | Service fee |
-| record.txId | string | Transaction hash |
-| record.txIndex | uint64 | Transaction index |
-| record.status | string | Status |
-| record.arrivedAt | int64 | Arrival time |
-| record.isFlaggedAsRisky | bool | Whether marked as risky (optional) |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
 
-## 3.4 Query Deposit Record List
+#### Response Data
 
-**Interface:** `POST /getAppDepositRecordList`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `record` | `AppDepositRecordEntity` | No |  |
 
-**Description:** Query deposit record list, supporting multiple filter conditions.
+### GetAppDepositRecordList
 
-**Request Parameters:**
+- HTTP: `POST /getAppDepositRecordList`
+- Request Type: `GetAppDepositRecordListReq`
+- Response Type: `GetAppDepositRecordListReply`
+- Description: Query deposit record list
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| chain | string | No | Chain name | - |
-| referenceId | string | No | Reference ID | - |
-| orderId | string | No | Order ID | - |
-| toAddress | string | No | Receiving address | - |
-| coinId | uint64 | No | Token ID | - |
-| startAt | int64 | No | Start time (default 90 days) | - |
-| endAt | int64 | No | End time | - |
-| nextId | string | No | Next page ID | - |
-| recordIds | Array<string> | No | Record ID list | Max 50 items |
-| referenceIds | Array<string> | No | Reference ID list | Max 50 items |
-| orderIds | Array<string> | No | Order ID list | Max 50 items |
-| limit | uint64 | No | Items per page | ≤100 |
+#### Request Parameters
 
-**Response Data:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | No |  |
+| `referenceId` | `string` | No |  |
+| `orderId` | `string` | No |  |
+| `toAddress` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `startAt` | `int64` | No | Defaults to the last 90 days |
+| `endAt` | `int64` | No |  |
+| `nextId` | `string` | No |  |
+| `recordIds` | `string[]` | No | validation: `(validate.rules).repeated = {ignore_empty: true, max_items: 50}` |
+| `referenceIds` | `string[]` | No | validation: `(validate.rules).repeated = {ignore_empty: true, max_items: 50}` |
+| `orderIds` | `string[]` | No | validation: `(validate.rules).repeated = {ignore_empty: true, max_items: 50}` |
+| `limit` | `uint64` | No | validation: `(validate.rules).uint64 = {lte: 100}` |
 
-| Field | Type | Description |
-|------|------|------|
-| records | Array | Deposit record list (same structure as getAppDepositRecord) |
-| nextId | string | Next page ID (optional) |
+#### Response Data
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `AppDepositRecordEntity[]` | No |  |
+| `nextId` | `string` | No | Pagination cursor; intended to be hidden from end users later. |
+
+## Data Models
+
+### CreateAppOrderDepositAddressReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `fiatId` | `uint64` | No | Fiat currency ID |
+| `chain` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `price` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `expiredAt` | `int64` | No | validation: `(validate.rules).int64 = {ignore_empty: true, gte: 1}` |
+| `buyerEmail` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, email: true}` |
+| `generateCheckoutURL` | `bool` | No |  |
+| `product` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:120}` |
+| `returnUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
+| `notifyUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
+| `closeUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
+
+### CreateAppOrderDepositAddressReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `address` | `string` | No |  |
+| `amount` | `string` | No |  |
+| `memo` | `string` | No |  |
+| `checkoutUrl` | `string` | No |  |
+| `confirmsNeeded` | `uint64` | No |  |
+
+### GetOrCreateAppDepositAddressReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `referenceId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `chain` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `notifyUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
+
+### GetOrCreateAppDepositAddressReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `address` | `string` | No |  |
+| `memo` | `string` | No |  |
+
+### GetAppDepositRecordReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+
+### GetAppDepositRecordReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `record` | `AppDepositRecordEntity` | No |  |
+
+### AppDepositRecordEntity
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `referenceId` | `string` | No |  |
+| `orderId` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `coinSymbol` | `string` | No |  |
+| `chain` | `string` | No |  |
+| `contract` | `string` | No |  |
+| `coinUSDPrice` | `string` | No |  |
+| `fromAddress` | `string` | No |  |
+| `toAddress` | `string` | No |  |
+| `toMemo` | `string` | No |  |
+| `amount` | `string` | No |  |
+| `serviceFee` | `string` | No |  |
+| `txId` | `string` | No |  |
+| `txIndex` | `uint64` | No |  |
+| `status` | `string` | No |  |
+| `arrivedAt` | `int64` | No |  |
+| `isFlaggedAsRisky` | `bool` | No |  |
+
+### GetAppDepositRecordListReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | No |  |
+| `referenceId` | `string` | No |  |
+| `orderId` | `string` | No |  |
+| `toAddress` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `startAt` | `int64` | No | Defaults to the last 90 days |
+| `endAt` | `int64` | No |  |
+| `nextId` | `string` | No |  |
+| `recordIds` | `string[]` | No | validation: `(validate.rules).repeated = {ignore_empty: true, max_items: 50}` |
+| `referenceIds` | `string[]` | No | validation: `(validate.rules).repeated = {ignore_empty: true, max_items: 50}` |
+| `orderIds` | `string[]` | No | validation: `(validate.rules).repeated = {ignore_empty: true, max_items: 50}` |
+| `limit` | `uint64` | No | validation: `(validate.rules).uint64 = {lte: 100}` |
+
+### GetAppDepositRecordListReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `AppDepositRecordEntity[]` | No |  |
+| `nextId` | `string` | No | Pagination cursor; intended to be hidden from end users later. |

@@ -1,81 +1,149 @@
 # User Deposit Module
 
-## 7.1 Get or Create User Deposit Address
+Last Updated: 2026-04-07
 
-**Interface:** `POST /getOrCreateUserDepositAddress`
+All HTTP interfaces in this file are synchronized from the CCPayment API v2 definitions. Every route uses `POST` and the base URL is `https://ccpayment.com/ccpayment/v2/`.
 
-**Description:** Get or create a user's deposit address.
+## Endpoint List
 
-**Request Parameters:**
+- `/getOrCreateUserDepositAddress` -> `GetOrCreateUserDepositAddress` (Get or create a user deposit address)
+- `/getUserDepositRecord` -> `GetUserDepositRecord` (Retrieve a user deposit record)
+- `/getUserDepositRecordList` -> `GetUserDepositRecordList` (Query user deposit history)
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| userId | string | Yes | User ID (cannot start with sys) | Length 5-64 |
-| chain | string | Yes | Chain name | Length ≥1 |
-| notifyUrl | string | No | Notification URL | Max 150 characters, URI format |
+## Interface Details
 
-**Response Data:**
+### GetOrCreateUserDepositAddress
 
-| Field | Type | Description |
-|------|------|------|
-| address | string | Deposit address |
-| memo | string | Memo (optional) |
+- HTTP: `POST /getOrCreateUserDepositAddress`
+- Request Type: `GetOrCreateUserDepositAddressReq`
+- Response Type: `GetOrCreateUserDepositAddressReply`
+- Description: Get or create a user deposit address
 
-## 7.2 Query User Deposit Record
+#### Request Parameters
 
-**Interface:** `POST /getUserDepositRecord`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `userId` | `string` | Yes | Cannot start with `sys`; length must be 5 to 64 characters. ; validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
+| `chain` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `notifyUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
 
-**Description:** Query details of a single user deposit record.
+#### Response Data
 
-**Request Parameters:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `address` | `string` | No |  |
+| `memo` | `string` | No |  |
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| recordId | string | Yes | Record ID | Length 5-64 |
+### GetUserDepositRecord
 
-**Response Data:**
+- HTTP: `POST /getUserDepositRecord`
+- Request Type: `GetUserDepositRecordReq`
+- Response Type: `GetUserDepositRecordReply`
+- Description: Retrieve a user deposit record
 
-| Field | Type | Description |
-|------|------|------|
-| record | Object | Deposit record |
-| record.userId | string | User ID |
-| record.recordId | string | Record ID |
-| record.coinId | uint64 | Token ID |
-| record.chain | string | Chain name |
-| record.contract | string | Contract address |
-| record.coinSymbol | string | Token symbol |
-| record.txId | string | Transaction hash |
-| record.coinUSDPrice | string | Token USD price |
-| record.fromAddress | string | Source address |
-| record.toAddress | string | Receiving address |
-| record.toMemo | string | Memo (optional) |
-| record.amount | string | Amount |
-| record.serviceFee | string | Service fee |
-| record.status | string | Status |
-| record.arrivedAt | int64 | Arrival time |
-| record.isFlaggedAsRisky | bool | Whether marked as risky (optional) |
+#### Request Parameters
 
-## 7.3 Query User Deposit Record List
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
 
-**Interface:** `POST /getUserDepositRecordList`
+#### Response Data
 
-**Description:** Query user deposit record list.
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `record` | `UserDepositRecord` | No |  |
 
-**Request Parameters:**
+### GetUserDepositRecordList
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| userId | string | Yes | User ID | Length 5-64 |
-| chain | string | No | Chain name | - |
-| coinId | uint64 | No | Token ID | - |
-| toAddress | string | No | Receiving address | - |
-| startAt | int64 | No | Start time (default 90 days) | - |
-| endAt | int64 | No | End time | - |
-| nextId | string | No | Next page ID | - |
+- HTTP: `POST /getUserDepositRecordList`
+- Request Type: `GetUserDepositRecordListReq`
+- Response Type: `GetUserDepositRecordListReply`
+- Description: Query user deposit history
 
-**Response Data:**
+#### Request Parameters
 
-| Field | Type | Description |
-|------|------|------|
-| records | Array | Deposit record list (same structure as getUserDepositRecord) |
-| nextId | string | Next page ID (optional) |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `userId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
+| `chain` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `toAddress` | `string` | No |  |
+| `startAt` | `int64` | No | Defaults to the last 90 days |
+| `endAt` | `int64` | No |  |
+| `nextId` | `string` | No |  |
+
+#### Response Data
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `UserDepositRecord[]` | No |  |
+| `nextId` | `string` | No |  |
+
+## Data Models
+
+### GetOrCreateUserDepositAddressReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `userId` | `string` | Yes | Cannot start with `sys`; length must be 5 to 64 characters. ; validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
+| `chain` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `notifyUrl` | `string` | No | validation: `(validate.rules).string = {ignore_empty: true, max_len:150, uri:true}` |
+
+### GetOrCreateUserDepositAddressReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `address` | `string` | No |  |
+| `memo` | `string` | No |  |
+
+### GetUserDepositRecordReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
+
+### GetUserDepositRecordReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `record` | `UserDepositRecord` | No |  |
+
+### UserDepositRecord
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `userId` | `string` | No |  |
+| `recordId` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `chain` | `string` | No |  |
+| `contract` | `string` | No |  |
+| `coinSymbol` | `string` | No |  |
+| `txId` | `string` | No |  |
+| `coinUSDPrice` | `string` | No |  |
+| `fromAddress` | `string` | No |  |
+| `toAddress` | `string` | No |  |
+| `toMemo` | `string` | No |  |
+| `amount` | `string` | No |  |
+| `serviceFee` | `string` | No |  |
+| `status` | `string` | No |  |
+| `arrivedAt` | `int64` | No |  |
+| `isFlaggedAsRisky` | `bool` | No |  |
+
+### GetUserDepositRecordListReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `userId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
+| `chain` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `toAddress` | `string` | No |  |
+| `startAt` | `int64` | No | Defaults to the last 90 days |
+| `endAt` | `int64` | No |  |
+| `nextId` | `string` | No |  |
+
+### GetUserDepositRecordListReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `UserDepositRecord[]` | No |  |
+| `nextId` | `string` | No |  |

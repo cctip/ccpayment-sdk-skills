@@ -1,178 +1,274 @@
 # Basic Info Module
 
-## 1.1 Get Token List
+Last Updated: 2026-04-07
 
-**Interface:** `POST /getCoinList`
+All HTTP interfaces in this file are synchronized from the CCPayment API v2 definitions. Every route uses `POST` and the base URL is `https://ccpayment.com/ccpayment/v2/`.
 
-**Description:** Get all supported token information on the platform, including network configurations and prices.
+## Endpoint List
 
-**Request Parameters:** None
+- `/getCoinList` -> `GetCoinList` (All supported tokens)
+- `/getFiatList` -> `GetFiatList` (All supported fiat currencies)
+- `/getCoin` -> `GetCoin` (Single token)
+- `/getCoinUSDTPrice` -> `GetCoinUSDTPrice` (Token price in USDT)
+- `/getChainList` -> `GetChainList` (Query chain status by `chainIds`; returns all chains when `chainIds` is omitted.)
+- `/all/chain` -> `GetAllChainList` (No proto comment.)
+- `/getMainCoinList` -> `GetMainCoinList` (Retrieve the main-chain token list)
 
-**Response Data:**
+## Interface Details
 
-| Field | Type | Description |
-|------|------|------|
-| coins | Array | Token list |
-| coins[].coinId | uint64 | Token ID |
-| coins[].symbol | string | Token symbol |
-| coins[].coinFullName | string | Token full name |
-| coins[].logoUrl | string | Logo URL |
-| coins[].status | string | Status (Normal/Maintain) |
-| coins[].networks | Object | Network information map (key is chain name) |
-| coins[].networks[].chain | string | Chain name |
-| coins[].networks[].chainFullName | string | Chain full name |
-| coins[].networks[].contract | string | Contract address |
-| coins[].networks[].precision | uint32 | Precision |
-| coins[].networks[].canDeposit | bool | Whether deposit is supported |
-| coins[].networks[].canWithdraw | bool | Whether withdrawal is supported |
-| coins[].networks[].minimumDepositAmount | string | Minimum deposit amount |
-| coins[].networks[].minimumWithdrawAmount | string | Minimum withdrawal amount |
-| coins[].networks[].maximumWithdrawAmount | string | Maximum withdrawal amount |
-| coins[].networks[].isSupportMemo | bool | Whether Memo is supported |
-| coins[].networks[].protocol | string | Protocol type |
-| coins[].price | string | USD price |
+### GetCoinList
 
-## 1.2 Get Single Token
+- HTTP: `POST /getCoinList`
+- Request Type: `GetCoinListReq`
+- Response Type: `GetCoinListReply`
+- Description: All supported tokens
 
-**Interface:** `POST /getCoin`
+#### Request Parameters
 
-**Description:** Get detailed information for a specified token.
+No fields defined.
 
-**Request Parameters:**
+#### Response Data
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| coinId | uint64 | Yes | Token ID | ≥1 |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coins` | `CoinEntity[]` | No |  |
 
-**Response Data:** Same as individual coin object in getCoinList
+### GetFiatList
 
-## 1.3 Get Token USD Price
+- HTTP: `POST /getFiatList`
+- Request Type: `Empty`
+- Response Type: `GetFiatListReply`
+- Description: All supported fiat currencies
 
-**Interface:** `POST /getCoinUSDTPrice`
+#### Request Parameters
 
-**Description:** Get USD prices for tokens in batch.
+No body.
 
-**Request Parameters:**
+#### Response Data
 
-| Field | Type | Required | Description |
-|------|------|------|------|
-| coinIds | Array<uint64> | Yes | Token ID list |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `fiats` | `FiatEntity[]` | No |  |
 
-**Response Data:**
+### GetCoin
 
-| Field | Type | Description |
-|------|------|------|
-| prices | Object | Price map (key is coinId, value is price string) |
+- HTTP: `POST /getCoin`
+- Request Type: `GetCoinReq`
+- Response Type: `GetCoinReply`
+- Description: Single token
 
-## 1.4 Get Fiat Currency List
+#### Request Parameters
 
-**Interface:** `POST /getFiatList`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
 
-**Description:** Get all supported fiat currency information on the platform.
+#### Response Data
 
-**Request Parameters:** None
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coin` | `CoinEntity` | No |  |
 
-**Response Data:**
+### GetCoinUSDTPrice
 
-| Field | Type | Description |
-|------|------|------|
-| fiats | Array | Fiat currency list |
-| fiats[].fiatId | uint64 | Fiat currency ID |
-| fiats[].symbol | string | Fiat currency symbol |
-| fiats[].logoUrl | string | Logo URL |
-| fiats[].mark | string | Mark |
-| fiats[].usdRate | string | USD exchange rate |
+- HTTP: `POST /getCoinUSDTPrice`
+- Request Type: `GetCoinUSDTPriceReq`
+- Response Type: `GetCoinUSDTPriceReply`
+- Description: Token price in USDT
 
-## 1.5 Get Chain List
+#### Request Parameters
 
-**Interface:** `POST /getChainList`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coinIds` | `uint64[]` | No |  |
 
-**Description:** Query status information for specified chains. If chains parameter is not provided, query all chains.
+#### Response Data
 
-**Request Parameters:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `prices` | `map<uint64, string>` | No | coinId:price |
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| chains | Array<string> | No | Chain name list | Each item length 1-16 |
+### GetChainList
 
-**Response Data:**
+- HTTP: `POST /getChainList`
+- Request Type: `GetChainListReq`
+- Response Type: `ChainListReply`
+- Description: Query chain status by `chainIds`; returns all chains when `chainIds` is omitted.
 
-| Field | Type | Description |
-|------|------|------|
-| chains | Array | Chain information list |
-| chains[].chain | string | Chain name |
-| chains[].chainFullName | string | Chain full name |
-| chains[].explorer | string | Block explorer URL |
-| chains[].logoUrl | string | Logo URL |
-| chains[].status | string | Status (Normal/Maintain) |
-| chains[].confirmations | int32 | Confirmation count |
-| chains[].baseUrl | string | Base URL |
-| chains[].isEVM | bool | Whether it's an EVM chain |
-| chains[].supportMemo | bool | Whether Memo is supported |
+#### Request Parameters
 
-## 1.6 Get All Chain List
+No fields defined.
 
-**Interface:** `POST /all/chain`
+#### Response Data
 
-**Description:** Get information for all chains (simplified version).
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chains` | `ChainList[]` | No |  |
 
-**Request Parameters:**
+### GetAllChainList
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| chains | Array<string> | No | Chain name list | Each item length 1-16 |
+- HTTP: `POST /all/chain`
+- Request Type: `GetChainListReq`
+- Response Type: `GetChainListReply`
 
-**Response Data:**
+#### Request Parameters
 
-| Field | Type | Description |
-|------|------|------|
-| chains | Array | Chain information list |
-| chains[].chain | string | Chain name |
-| chains[].chainFullName | string | Chain full name |
-| chains[].explorer | string | Block explorer URL |
-| chains[].logoUrl | string | Logo URL |
-| chains[].status | string | Status |
-| chains[].confirmNum | int32 | Confirmation count |
-| chains[].isEVM | bool | Whether it's an EVM chain |
+No fields defined.
 
-## 1.7 Get CCWallet User ID
+#### Response Data
 
-**Interface:** `POST /getCwalletUserId`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chains` | `Chain[]` | No |  |
 
-**Description:** Verify and get CCWallet user information.
+### GetMainCoinList
 
-**Request Parameters:**
+- HTTP: `POST /getMainCoinList`
+- Request Type: `GetMainCoinListReq`
+- Response Type: `GetMainCoinListReply`
+- Description: Retrieve the main-chain token list
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| cwalletUserId | string | Yes | CCWallet user ID | Length ≥1 |
+#### Request Parameters
 
-**Response Data:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `appId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
 
-| Field | Type | Description |
-|------|------|------|
-| cwalletUserId | string | CCWallet user ID |
-| cwalletUserName | string | CCWallet username |
+#### Response Data
 
-## 1.8 Get Withdrawal Fee
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coinChainList` | `CoinChainEntity[]` | No |  |
 
-**Interface:** `POST /getWithdrawFee`
+## Data Models
 
-**Description:** Get the withdrawal fee for a specified token and chain.
+### GetCoinListReq
 
-**Request Parameters:**
+No fields defined.
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| coinId | uint64 | Yes | Token ID | ≥1 |
-| chain | string | Yes | Chain name | Length ≥1 |
+### GetCoinListReply
 
-**Response Data:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coins` | `CoinEntity[]` | No |  |
 
-| Field | Type | Description |
-|------|------|------|
-| fee | Object | Fee information |
-| fee.coinId | uint64 | Token ID |
-| fee.coinSymbol | string | Token symbol |
-| fee.amount | string | Fee amount |
-| networkFeeInquiryID | string | Network fee inquiry ID |
+### CoinEntity
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coinId` | `uint64` | No |  |
+| `symbol` | `string` | No |  |
+| `coinFullName` | `string` | No |  |
+| `logoUrl` | `string` | No |  |
+| `status` | `string` | No |  |
+| `networks` | `map<string, NetworkEntity>` | No | chain:network |
+| `price` | `string` | No |  |
+
+### GetFiatListReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `fiats` | `FiatEntity[]` | No |  |
+
+### FiatEntity
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `fiatId` | `uint64` | No |  |
+| `symbol` | `string` | No |  |
+| `logoUrl` | `string` | No |  |
+| `mark` | `string` | No |  |
+| `usdRate` | `string` | No |  |
+
+### GetCoinReq
+
+Retrieve a single token
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+
+### GetCoinReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coin` | `CoinEntity` | No |  |
+
+### GetCoinUSDTPriceReq
+
+Retrieve the USDT price for specific tokens
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coinIds` | `uint64[]` | No |  |
+
+### GetCoinUSDTPriceReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `prices` | `map<uint64, string>` | No | coinId:price |
+
+### GetChainListReq
+
+No fields defined.
+
+### ChainListReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chains` | `ChainList[]` | No |  |
+
+### ChainList
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | No |  |
+| `chainFullName` | `string` | No |  |
+| `explorer` | `string` | No |  |
+| `logoUrl` | `string` | No |  |
+| `status` | `string` | No | Normal/Maintain |
+| `confirmations` | `int32` | No |  |
+| `baseUrl` | `string` | No |  |
+| `isEVM` | `bool` | No |  |
+| `supportMemo` | `bool` | No |  |
+
+### GetChainListReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chains` | `Chain[]` | No |  |
+
+### Chain
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `chain` | `string` | No |  |
+| `chainFullName` | `string` | No |  |
+| `explorer` | `string` | No |  |
+| `logoUrl` | `string` | No |  |
+| `status` | `string` | No | Normal/Maintain |
+| `confirmNum` | `int32` | No |  |
+| `isEVM` | `bool` | No |  |
+
+### GetMainCoinListReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `appId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+
+### GetMainCoinListReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coinChainList` | `CoinChainEntity[]` | No |  |
+
+### CoinChainEntity
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coinId` | `uint64` | No |  |
+| `symbol` | `string` | No |  |
+| `logoUrl` | `string` | No |  |
+| `status` | `string` | No |  |
+| `chain` | `string` | No |  |
+| `network` | `string` | No |  |

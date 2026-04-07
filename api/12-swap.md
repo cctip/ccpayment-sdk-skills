@@ -1,142 +1,269 @@
 # Swap Module
 
-## 12.1 Get Swap Coin List
+Last Updated: 2026-04-07
 
-**Interface:** `POST /getSwapCoinList`
+All HTTP interfaces in this file are synchronized from the CCPayment API v2 definitions. Every route uses `POST` and the base URL is `https://ccpayment.com/ccpayment/v2/`.
 
-**Description:** Get the list of tokens supported for swapping.
+## Endpoint List
 
-**Request Parameters:** None
+- `/getSwapCoinList` -> `GetSwapCoinList` (====================================Swap========= Swap token list)
+- `/estimate` -> `SwapEstimate` (No proto comment.)
+- `/getSwapRecord` -> `GetSwapRecord` (No proto comment.)
+- `/getSwapRecordList` -> `GetSwapRecordList` (No proto comment.)
+- `/swap` -> `Swap` (No proto comment.)
 
-**Response Data:**
+## Interface Details
 
-| Field | Type | Description |
-|------|------|------|
-| coins | Array | Token list |
-| coins[].coinId | uint64 | Token ID |
-| coins[].symbol | string | Token symbol |
-| coins[].logoUrl | string | Logo URL |
-| coins[].chains | Array<string> | Supported chain list |
+### GetSwapCoinList
 
-## 12.2 Swap Estimate
+- HTTP: `POST /getSwapCoinList`
+- Request Type: `Empty`
+- Response Type: `GetSwapCoinListReply`
+- Description: ====================================Swap========= Swap token list
 
-**Interface:** `POST /swapEstimate`
+#### Request Parameters
 
-**Description:** Estimate the swap amount.
+No body.
 
-**Request Parameters:**
+#### Response Data
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| fromCoinId | uint64 | Yes | From token ID | ≥1 |
-| toCoinId | uint64 | Yes | To token ID | ≥1 |
-| fromAmount | string | Yes | From amount | Length ≥1 |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coins` | `SwapCoinEntity[]` | No |  |
 
-**Response Data:**
+### SwapEstimate
 
-| Field | Type | Description |
-|------|------|------|
-| fromCoinId | uint64 | From token ID |
-| fromCoinSymbol | string | From token symbol |
-| fromAmount | string | From amount |
-| toCoinId | uint64 | To token ID |
-| toCoinSymbol | string | To token symbol |
-| toAmount | string | To amount |
-| rate | string | Exchange rate |
+- HTTP: `POST /estimate`
+- Request Type: `SwapReq`
+- Response Type: `SwapEstimateReply`
 
-## 12.3 Execute Swap
+#### Request Parameters
 
-**Interface:** `POST /swap`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | No | [(validate.rules).string = {min_len: 3, max_len:64}]; |
+| `userId` | `string` | No | [(validate.rules).string = {ignore_empty: true, min_len: 3, max_len:64}]; //{ignore_empty: true, max_len:120}] |
+| `coinIdIn` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `amountIn` | `string` | Yes | Input amount ; validation: `(validate.rules).string.min_len = 1` |
+| `coinIdOut` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `amountOutMinimum` | `string` | No |  |
+| `extraFeeRate` | `string` | No |  |
+| `appId` | `string` | No | Reserved for business-side use |
 
-**Description:** Execute a swap operation.
+#### Response Data
 
-**Request Parameters:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coinIdIn` | `uint64` | No |  |
+| `coinIdOut` | `uint64` | No | Token ID |
+| `amountOut` | `string` | No |  |
+| `amountIn` | `string` | No |  |
+| `swapRate` | `string` | No |  |
+| `feeRate` | `string` | No |  |
+| `fee` | `string` | No |  |
+| `extraFee` | `string` | No |  |
+| `netAmountOut` | `string` | No | Net amount received |
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| orderId | string | Yes | Order ID | Length 3-64 |
-| fromCoinId | uint64 | Yes | From token ID | ≥1 |
-| toCoinId | uint64 | Yes | To token ID | ≥1 |
-| fromAmount | string | Yes | From amount | Length ≥1 |
+### GetSwapRecord
 
-**Response Data:**
+- HTTP: `POST /getSwapRecord`
+- Request Type: `GetSwapRecordReq`
+- Response Type: `GetSwapRecordReply`
 
-| Field | Type | Description |
-|------|------|------|
-| recordId | string | Swap record ID |
+#### Request Parameters
 
-## 12.4 Query Swap Record
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `orderId` | `string` | No |  |
+| `ty` | `int32` | No |  |
 
-**Interface:** `POST /getSwapRecord`
+#### Response Data
 
-**Description:** Query details of a single swap record.
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `record` | `SwapRecordEntity` | No |  |
 
-**Request Parameters:**
+### GetSwapRecordList
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| recordId | string | No | Record ID | - |
-| orderId | string | No | Order ID | - |
+- HTTP: `POST /getSwapRecordList`
+- Request Type: `GetSwapRecordListReq`
+- Response Type: `GetSwapRecordListReply`
 
-**Response Data:**
+#### Request Parameters
 
-| Field | Type | Description |
-|------|------|------|
-| record | Object | Swap record |
-| record.recordId | string | Record ID |
-| record.orderId | string | Order ID |
-| record.fromCoinId | uint64 | From token ID |
-| record.fromCoinSymbol | string | From token symbol |
-| record.fromAmount | string | From amount |
-| record.toCoinId | uint64 | To token ID |
-| record.toCoinSymbol | string | To token symbol |
-| record.toAmount | string | To amount |
-| record.rate | string | Exchange rate |
-| record.status | string | Status |
-| record.createdAt | int64 | Creation time |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordIds` | `string[]` | No | validation: `(validate.rules).repeated.max_items = 20` |
+| `orderIds` | `string[]` | No | validation: `(validate.rules).repeated.max_items = 20` |
+| `userId` | `string` | No |  |
+| `coinIdIn` | `uint64` | No |  |
+| `coinIdOut` | `uint64` | No |  |
+| `startAt` | `int64` | No | Defaults to the last 90 days |
+| `endAt` | `int64` | No |  |
+| `nextId` | `string` | No |  |
 
-## 12.5 Query Swap Record List
+#### Response Data
 
-**Interface:** `POST /getSwapRecordList`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `SwapRecordEntity[]` | No |  |
+| `nextId` | `string` | No | Pagination cursor; intended to be hidden from end users later. |
 
-**Description:** Query swap record list.
+### Swap
 
-**Request Parameters:**
+- HTTP: `POST /swap`
+- Request Type: `SwapReq`
+- Response Type: `SwapReply`
 
-| Field | Type | Required | Description |
-|------|------|------|------|
-| orderIds | Array<string> | No | Order ID list |
-| fromCoinId | uint64 | No | From token ID |
-| toCoinId | uint64 | No | To token ID |
-| startAt | int64 | No | Start time (default 90 days) |
-| endAt | int64 | No | End time |
-| nextId | string | No | Next page ID |
+#### Request Parameters
 
-**Response Data:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | No | [(validate.rules).string = {min_len: 3, max_len:64}]; |
+| `userId` | `string` | No | [(validate.rules).string = {ignore_empty: true, min_len: 3, max_len:64}]; //{ignore_empty: true, max_len:120}] |
+| `coinIdIn` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `amountIn` | `string` | Yes | Input amount ; validation: `(validate.rules).string.min_len = 1` |
+| `coinIdOut` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `amountOutMinimum` | `string` | No |  |
+| `extraFeeRate` | `string` | No |  |
+| `appId` | `string` | No | Reserved for business-side use |
 
-| Field | Type | Description |
-|------|------|------|
-| records | Array | Swap record list (same structure as getSwapRecord) |
-| nextId | string | Next page ID (optional) |
+#### Response Data
 
-## 12.6 Select Hosted Invoice Coin
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `orderId` | `string` | No |  |
+| `coinIdIn` | `uint64` | No |  |
+| `coinIdOut` | `uint64` | No | Token ID |
+| `amountOut` | `string` | No |  |
+| `amountIn` | `string` | No |  |
+| `amountOutMinimum` | `string` | No |  |
+| `swapRate` | `string` | No |  |
+| `fee` | `string` | No |  |
+| `feeRate` | `string` | No |  |
+| `extraFee` | `string` | No |  |
+| `netAmountOut` | `string` | No | Net amount received |
+| `to_coin_price` | `string` | No | Price |
+| `from_coin_price` | `string` | No | Price |
 
-**Interface:** `POST /selectHostedInvoiceCoin`
+## Data Models
 
-**Description:** Select the payment token for a Hosted Invoice order.
+### GetSwapCoinListReply
 
-**Request Parameters:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coins` | `SwapCoinEntity[]` | No |  |
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| orderId | string | Yes | Order ID | Length ≥1 |
-| coinId | uint64 | Yes | Token ID | ≥1 |
-| chain | string | Yes | Chain name | Length ≥1 |
+### SwapCoinEntity
 
-**Response Data:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coinId` | `uint64` | No |  |
+| `symbol` | `string` | No |  |
+| `logoUrl` | `string` | No |  |
 
-| Field | Type | Description |
-|------|------|------|
-| address | string | Deposit address |
-| memo | string | Memo (optional) |
-| amountToPay | string | Amount to pay |
+### SwapReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | No | [(validate.rules).string = {min_len: 3, max_len:64}]; |
+| `userId` | `string` | No | [(validate.rules).string = {ignore_empty: true, min_len: 3, max_len:64}]; //{ignore_empty: true, max_len:120}] |
+| `coinIdIn` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `amountIn` | `string` | Yes | Input amount ; validation: `(validate.rules).string.min_len = 1` |
+| `coinIdOut` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `amountOutMinimum` | `string` | No |  |
+| `extraFeeRate` | `string` | No |  |
+| `appId` | `string` | No | Reserved for business-side use |
+
+### SwapEstimateReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `coinIdIn` | `uint64` | No |  |
+| `coinIdOut` | `uint64` | No | Token ID |
+| `amountOut` | `string` | No |  |
+| `amountIn` | `string` | No |  |
+| `swapRate` | `string` | No |  |
+| `feeRate` | `string` | No |  |
+| `fee` | `string` | No |  |
+| `extraFee` | `string` | No |  |
+| `netAmountOut` | `string` | No | Net amount received |
+
+### GetSwapRecordReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `orderId` | `string` | No |  |
+| `ty` | `int32` | No |  |
+
+### GetSwapRecordReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `record` | `SwapRecordEntity` | No |  |
+
+### SwapRecordEntity
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `orderId` | `string` | No |  |
+| `coinInSymbol` | `string` | No |  |
+| `coinIdIn` | `uint64` | No |  |
+| `coinOutSymbol` | `string` | No |  |
+| `coinIdOut` | `uint64` | No |  |
+| `amountOut` | `string` | No |  |
+| `amountIn` | `string` | No |  |
+| `amountOutMinimum` | `string` | No |  |
+| `netAmountOut` | `string` | No | Net amount received |
+| `userId` | `string` | No |  |
+| `extraFee` | `string` | No |  |
+| `extraFeeRate` | `string` | No |  |
+| `swapRate` | `string` | No |  |
+| `feeRate` | `string` | No |  |
+| `fee` | `string` | No |  |
+| `status` | `string` | No |  |
+| `createdAt` | `int64` | No |  |
+| `arrivedAt` | `int64` | No |  |
+
+### GetSwapRecordListReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordIds` | `string[]` | No | validation: `(validate.rules).repeated.max_items = 20` |
+| `orderIds` | `string[]` | No | validation: `(validate.rules).repeated.max_items = 20` |
+| `userId` | `string` | No |  |
+| `coinIdIn` | `uint64` | No |  |
+| `coinIdOut` | `uint64` | No |  |
+| `startAt` | `int64` | No | Defaults to the last 90 days |
+| `endAt` | `int64` | No |  |
+| `nextId` | `string` | No |  |
+
+### GetSwapRecordListReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `SwapRecordEntity[]` | No |  |
+| `nextId` | `string` | No | Pagination cursor; intended to be hidden from end users later. |
+
+### SwapReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `orderId` | `string` | No |  |
+| `coinIdIn` | `uint64` | No |  |
+| `coinIdOut` | `uint64` | No | Token ID |
+| `amountOut` | `string` | No |  |
+| `amountIn` | `string` | No |  |
+| `amountOutMinimum` | `string` | No |  |
+| `swapRate` | `string` | No |  |
+| `fee` | `string` | No |  |
+| `feeRate` | `string` | No |  |
+| `extraFee` | `string` | No |  |
+| `netAmountOut` | `string` | No | Net amount received |
+| `to_coin_price` | `string` | No | Price |
+| `from_coin_price` | `string` | No | Price |

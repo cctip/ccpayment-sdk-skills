@@ -93,7 +93,6 @@ ccpayment.sdk.codegen shell merchant-assets ./shell-examples
 - `user-withdraw` - User Withdraw Module
 - `user-transfer` - User Transfer Module
 - `orders` - Orders Module
-- `checkout` - Checkout Module
 - `swap` - Swap Module
 - `user-swap` - User Swap Module
 - `utilities` - Utilities
@@ -105,7 +104,7 @@ When the AI assistant receives a command, it executes different generation strat
 ### Full Generation Mode
 **Command**: `ccpayment.sdk.codegen golang` or `ccpayment.sdk.codegen golang . /custom/path`
 
-Generate a complete SDK for all 14 modules, including all core components and services.
+Generate a complete SDK for all 13 modules, including all core components and services.
 
 ### Modular Generation Mode
 **Command**: `ccpayment.sdk.codegen golang merchant-assets` or `ccpayment.sdk.codegen golang merchant-assets /custom/path`
@@ -144,13 +143,12 @@ Only generate code for the specified module, including:
 | `user-withdraw` | `api/08-user-withdraw.md` | `UserWithdrawService` |
 | `user-transfer` | `api/09-user-transfer.md` | `UserTransferService` |
 | `orders` | `api/10-orders.md` | `OrdersService` |
-| `checkout` | `api/11-checkout.md` | `CheckoutService` |
 | `swap` | `api/12-swap.md` | `SwapService` |
 | `user-swap` | `api/13-user-swap.md` | `UserSwapService` |
 | `utilities` | `api/14-utilities.md` | `UtilitiesService` |
 
 **Reading Strategy:**
-- Full generation: Read all 14 module files
+- Full generation: Read all 13 module files
 - Modular generation: Only read the specified module file + base files
 
 #### Step 2: Parse API Definitions
@@ -496,7 +494,7 @@ func main() {
 
 **Full Generation** (`ccpayment.sdk.codegen shell` or `ccpayment.sdk.codegen shell /output/path`):
 
-Generate Shell script files for all 14 modules:
+Generate Shell script files for all 13 modules:
 
 ```
 <output_path>/  (default: generated/shell/)
@@ -809,7 +807,7 @@ After generating code, verify with the following steps:
 5. ✅ **Verify Output**
    
    **Full Generation**:
-   - Test main interfaces of all 14 modules
+   - Test main interfaces of all 13 modules
    - Verify all data types are parsed correctly
    
    **Modular Generation** (e.g., `merchant-assets`):

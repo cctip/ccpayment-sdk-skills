@@ -1,174 +1,324 @@
 # User Transfer Module
 
-## 9.1 User Transfer
+Last Updated: 2026-04-07
 
-**Interface:** `POST /userTransfer`
+All HTTP interfaces in this file are synchronized from the CCPayment API v2 definitions. Every route uses `POST` and the base URL is `https://ccpayment.com/ccpayment/v2/`.
 
-**Description:** Initiate a transfer between users.
+## Endpoint List
 
-**Request Parameters:**
+- `/userTransfer` -> `UserTransfer` (Create a user transfer)
+- `/getUserTransferRecord` -> `GetUserTransferRecord` (Query a user transfer record)
+- `/getUserTransferRecordList` -> `GetUserTransferRecordList` (Query user transfer history)
+- `/userBatchTransfer` -> `UserBatchTransfer` (Create a batch user transfer)
+- `/getUserBatchTransferRecord` -> `GetUserBatchTransferRecord` (Query a batch user transfer record)
+- `/getUserBatchTransferRecordList` -> `GetUserBatchTransferRecordList` (Query batch user transfer history)
+- `/getUserBatchTransferRecordDetail` -> `GetUserBatchTransferRecordDetail` (Query detailed records for a batch user transfer)
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| orderId | string | Yes | Order ID | Length 3-64 |
-| fromUserId | string | Yes | From user ID | Length 5-64 |
-| toUserId | string | Yes | To user ID | Length 5-64 |
-| coinId | uint64 | Yes | Token ID | ≥1 |
-| amount | string | Yes | Transfer amount | Length ≥1 |
-| remark | string | No | Remark | - |
+## Interface Details
 
-**Response Data:**
+### UserTransfer
 
-| Field | Type | Description |
-|------|------|------|
-| recordId | string | Transfer record ID |
+- HTTP: `POST /userTransfer`
+- Request Type: `UserTransferReq`
+- Response Type: `UserTransferReply`
+- Description: Create a user transfer
 
-## 9.2 Query User Transfer Record
+#### Request Parameters
 
-**Interface:** `POST /getUserTransferRecord`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `fromUserId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
+| `toUserId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `amount` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `remark` | `string` | No |  |
 
-**Description:** Query details of a single user transfer record.
+#### Response Data
 
-**Request Parameters:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
 
-| Field | Type | Required | Description |
-|------|------|------|------|
-| recordId | string | No | Record ID |
-| orderId | string | No | Order ID |
+### GetUserTransferRecord
 
-**Response Data:**
+- HTTP: `POST /getUserTransferRecord`
+- Request Type: `GetUserTransferRecordReq`
+- Response Type: `GetUserTransferRecordReply`
+- Description: Query a user transfer record
 
-| Field | Type | Description |
-|------|------|------|
-| record | Object | Transfer record |
-| record.recordId | string | Record ID |
-| record.coinId | uint64 | Token ID |
-| record.coinSymbol | string | Token symbol |
-| record.orderId | string | Order ID |
-| record.fromUserId | string | From user ID |
-| record.toUserId | string | To user ID |
-| record.amount | string | Amount |
-| record.status | string | Status |
-| record.remark | string | Remark (optional) |
-| record.coinUSDPrice | string | Token USD price |
+#### Request Parameters
 
-## 9.3 Query User Transfer Record List
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `orderId` | `string` | No |  |
 
-**Interface:** `POST /getUserTransferRecordList`
+#### Response Data
 
-**Description:** Query user transfer record list.
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `record` | `UserTransferRecord` | No |  |
 
-**Request Parameters:**
+### GetUserTransferRecordList
 
-| Field | Type | Required | Description |
-|------|------|------|------|
-| orderIds | Array<string> | No | Order ID list |
-| fromUserId | string | No | From user ID |
-| toUserId | string | No | To user ID |
-| coinId | uint64 | No | Token ID |
-| startAt | int64 | No | Start time (default 90 days) |
-| endAt | int64 | No | End time |
-| nextId | string | No | Next page ID |
+- HTTP: `POST /getUserTransferRecordList`
+- Request Type: `GetUserTransferRecordListReq`
+- Response Type: `GetUserTransferRecordListReply`
+- Description: Query user transfer history
 
-**Response Data:**
+#### Request Parameters
 
-| Field | Type | Description |
-|------|------|------|
-| records | Array | Transfer record list (same structure as getUserTransferRecord) |
-| nextId | string | Next page ID (optional) |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderIds` | `string[]` | No |  |
+| `fromUserId` | `string` | No |  |
+| `toUserId` | `string` | No |  |
+| `coinId` | `uint64` | No | Token ID |
+| `startAt` | `int64` | No | Defaults to the last 90 days |
+| `endAt` | `int64` | No |  |
+| `nextId` | `string` | No |  |
 
-## 9.4 User Batch Transfer
+#### Response Data
 
-**Interface:** `POST /userBatchTransfer`
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `UserTransferRecord[]` | No |  |
+| `nextId` | `string` | No |  |
 
-**Description:** Initiate a batch transfer for users.
+### UserBatchTransfer
 
-**Request Parameters:**
+- HTTP: `POST /userBatchTransfer`
+- Request Type: `UserBatchTransferReq`
+- Response Type: `UserBatchTransferReply`
+- Description: Create a batch user transfer
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| orderId | string | Yes | Order ID | Length 3-64 |
-| userId | string | Yes | From user ID | Length 5-64 |
-| toUsers | Array | Yes | To user list | At least 1 item |
-| toUsers[].userId | string | Yes | To user ID | Length 5-64 |
-| toUsers[].amount | string | Yes | Transfer amount | Length 5-64 |
-| coinId | uint64 | Yes | Token ID | ≥1 |
-| remark | string | No | Remark | - |
+#### Request Parameters
 
-**Response Data:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `userId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
+| `toUsers` | `ToUser[]` | Yes | validation: `(validate.rules).repeated.min_items = 1` |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `remark` | `string` | No |  |
 
-| Field | Type | Description |
-|------|------|------|
-| recordId | string | Batch transfer record ID |
+#### Response Data
 
-## 9.5 Query User Batch Transfer Record
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
 
-**Interface:** `POST /getUserBatchTransferRecord`
+### GetUserBatchTransferRecord
 
-**Description:** Query details of a single user batch transfer record.
+- HTTP: `POST /getUserBatchTransferRecord`
+- Request Type: `GetUserBatchTransferRecordReq`
+- Response Type: `GetUserBatchTransferRecordReply`
+- Description: Query a batch user transfer record
 
-**Request Parameters:**
+#### Request Parameters
 
-| Field | Type | Required | Description |
-|------|------|------|------|
-| recordId | string | No | Record ID |
-| orderId | string | No | Order ID |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `orderId` | `string` | No |  |
 
-**Response Data:**
+#### Response Data
 
-| Field | Type | Description |
-|------|------|------|
-| record | Object | Batch transfer record |
-| record.recordId | string | Record ID |
-| record.userId | string | From user ID |
-| record.coinId | uint64 | Token ID |
-| record.coinSymbol | string | Token symbol |
-| record.orderId | string | Order ID |
-| record.toUsers | Array | To user list |
-| record.status | string | Status |
-| record.remark | string | Remark (optional) |
-| record.coinUSDPrice | string | Token USD price |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `record` | `UserBatchTransferRecord` | No |  |
 
-## 9.6 Query User Batch Transfer Record List
+### GetUserBatchTransferRecordList
 
-**Interface:** `POST /getUserBatchTransferRecordList`
+- HTTP: `POST /getUserBatchTransferRecordList`
+- Request Type: `GetUserBatchTransferRecordListReq`
+- Response Type: `GetUserBatchTransferRecordListReply`
+- Description: Query batch user transfer history
 
-**Description:** Query user batch transfer record list.
+#### Request Parameters
 
-**Request Parameters:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderIds` | `string[]` | No |  |
+| `userId` | `string` | No |  |
+| `coinId` | `uint64` | No | Token ID |
+| `startAt` | `int64` | No | Defaults to the last 90 days |
+| `endAt` | `int64` | No |  |
+| `nextId` | `string` | No |  |
 
-| Field | Type | Required | Description |
-|------|------|------|------|
-| orderIds | Array<string> | No | Order ID list |
-| userId | string | No | User ID |
-| coinId | uint64 | No | Token ID |
-| startAt | int64 | No | Start time (default 90 days) |
-| endAt | int64 | No | End time |
-| nextId | string | No | Next page ID |
+#### Response Data
 
-**Response Data:**
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `UserBatchTransferRecord[]` | No |  |
+| `nextId` | `string` | No |  |
 
-| Field | Type | Description |
-|------|------|------|
-| records | Array | Batch transfer record list (same structure as getUserBatchTransferRecord) |
-| nextId | string | Next page ID (optional) |
+### GetUserBatchTransferRecordDetail
 
-## 9.7 Query User Batch Transfer Record Details
+- HTTP: `POST /getUserBatchTransferRecordDetail`
+- Request Type: `GetUserBatchTransferRecordDetailReq`
+- Response Type: `GetUserBatchTransferRecordDetailReply`
+- Description: Query detailed records for a batch user transfer
 
-**Interface:** `POST /getUserBatchTransferRecordDetail`
+#### Request Parameters
 
-**Description:** Query the detail list of a user batch transfer record.
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `nextId` | `string` | No |  |
 
-**Request Parameters:**
+#### Response Data
 
-| Field | Type | Required | Description | Validation Rules |
-|------|------|------|------|----------|
-| recordId | string | Yes | Batch transfer record ID | Length ≥1 |
-| nextId | string | No | Next page ID | - |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `UserTransferRecord[]` | No |  |
+| `nextId` | `string` | No |  |
 
-**Response Data:**
+## Data Models
 
-| Field | Type | Description |
-|------|------|------|
-| records | Array | Transfer detail list (same structure as getUserTransferRecord) |
-| nextId | string | Next page ID (optional) |
+### UserTransferReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `fromUserId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
+| `toUserId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `amount` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `remark` | `string` | No |  |
+
+### UserTransferReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+
+### GetUserTransferRecordReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `orderId` | `string` | No |  |
+
+### GetUserTransferRecordReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `record` | `UserTransferRecord` | No |  |
+
+### UserTransferRecord
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `coinSymbol` | `string` | No |  |
+| `orderId` | `string` | No |  |
+| `fromUserId` | `string` | No |  |
+| `toUserId` | `string` | No |  |
+| `amount` | `string` | No |  |
+| `status` | `string` | No |  |
+| `remark` | `string` | No |  |
+| `coinUSDPrice` | `string` | No |  |
+
+### GetUserTransferRecordListReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderIds` | `string[]` | No |  |
+| `fromUserId` | `string` | No |  |
+| `toUserId` | `string` | No |  |
+| `coinId` | `uint64` | No | Token ID |
+| `startAt` | `int64` | No | Defaults to the last 90 days |
+| `endAt` | `int64` | No |  |
+| `nextId` | `string` | No |  |
+
+### GetUserTransferRecordListReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `UserTransferRecord[]` | No |  |
+| `nextId` | `string` | No |  |
+
+### UserBatchTransferReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 3, max_len:64}` |
+| `userId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
+| `toUsers` | `ToUser[]` | Yes | validation: `(validate.rules).repeated.min_items = 1` |
+| `coinId` | `uint64` | Yes | Token ID ; validation: `(validate.rules).uint64.gte = 1` |
+| `remark` | `string` | No |  |
+
+### ToUser
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `userId` | `string` | Yes | validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
+| `amount` | `string` | Yes | validation: `(validate.rules).string = {min_len: 5, max_len:64}` |
+
+### UserBatchTransferReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+
+### GetUserBatchTransferRecordReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `orderId` | `string` | No |  |
+
+### GetUserBatchTransferRecordReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `record` | `UserBatchTransferRecord` | No |  |
+
+### UserBatchTransferRecord
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | No |  |
+| `userId` | `string` | No |  |
+| `coinId` | `uint64` | No |  |
+| `coinSymbol` | `string` | No |  |
+| `orderId` | `string` | No |  |
+| `toUsers` | `ToUser[]` | No |  |
+| `status` | `string` | No |  |
+| `remark` | `string` | No |  |
+| `coinUSDPrice` | `string` | No |  |
+
+### GetUserBatchTransferRecordListReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `orderIds` | `string[]` | No |  |
+| `userId` | `string` | No |  |
+| `coinId` | `uint64` | No | Token ID |
+| `startAt` | `int64` | No | Defaults to the last 90 days |
+| `endAt` | `int64` | No |  |
+| `nextId` | `string` | No |  |
+
+### GetUserBatchTransferRecordListReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `UserBatchTransferRecord[]` | No |  |
+| `nextId` | `string` | No |  |
+
+### GetUserBatchTransferRecordDetailReq
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `recordId` | `string` | Yes | validation: `(validate.rules).string.min_len = 1` |
+| `nextId` | `string` | No |  |
+
+### GetUserBatchTransferRecordDetailReply
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `records` | `UserTransferRecord[]` | No |  |
+| `nextId` | `string` | No |  |
