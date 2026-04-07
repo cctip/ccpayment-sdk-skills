@@ -227,7 +227,7 @@ source generated/shell/env.sh && ./generated/shell/merchant_assets.sh
 
 - 📖 [API Documentation](.rules/api/README.md) - Complete API interface documentation
 - 🛠️ [Code Generator Instructions](SKILL.md) - Detailed instructions for the code generator
-- 🌐 [Official Documentation](https://ccpayment.com/doc) - CCPayment official documentation
+- 🌐 [Official Documentation](https://ccpayment.com/api/doc) - CCPayment official documentation
 
 ## FAQ
 
@@ -305,7 +305,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Related Links
 
 - 🌐 [CCPayment Official Website](https://ccpayment.com)
-- 📚 [API Documentation](https://ccpayment.com/doc)
+- 📚 [API Documentation](https://ccpayment.com/api/doc)
 - 💻 [Developer Console](https://console.ccpayment.com)
 - 🐛 [Issue Feedback](https://github.com/yourusername/ccpayment-sdk/issues)
 
