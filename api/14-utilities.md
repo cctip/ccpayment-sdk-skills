@@ -1,6 +1,6 @@
 # Utilities
 
-## 13.1 Verify Address
+## 14.1 Verify Address
 
 **Interface:** `POST /verifyAddress`
 
@@ -20,7 +20,7 @@
 | valid | bool | Whether valid |
 | message | string | Verification message |
 
-## 13.2 Abandon Address
+## 14.2 Abandon Address
 
 **Interface:** `POST /abandonAddress`
 
@@ -35,7 +35,7 @@
 
 **Response Data:** Empty object
 
-## 13.3 Get Hosted Invoice Order Info
+## 14.3 Get Hosted Invoice Order Info
 
 **Interface:** `POST /hostedInvoiceOrderInfo`
 
@@ -66,7 +66,7 @@
 | totalPaidValue | string | Total paid value |
 | paidList | Array | Paid list |
 
-## 13.4 Get Pay Info
+## 14.4 Get Pay Info
 
 **Interface:** `POST /getPayInfo`
 
@@ -94,7 +94,7 @@
 | qrCode | string | QR code data |
 | expiredAt | int64 | Expiration time |
 
-## 13.5 Health Check
+## 14.5 Health Check
 
 **Interface:** `POST /health`
 

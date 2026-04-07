@@ -86,6 +86,7 @@ The SDK is organized by functional modules, totaling 13 modules:
 - `user-deposit` - User deposit management
 - `user-withdraw` - User withdrawal management
 - `user-transfer` - User transfer management
+- `user-swap` - User swap management
 
 ### Other Modules
 - `orders` - Order management
