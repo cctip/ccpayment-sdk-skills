@@ -143,9 +143,9 @@ Only generate code for the specified module, including:
 | `user-withdraw` | `api/08-user-withdraw.md` | `UserWithdrawService` |
 | `user-transfer` | `api/09-user-transfer.md` | `UserTransferService` |
 | `orders` | `api/10-orders.md` | `OrdersService` |
-| `swap` | `api/12-swap.md` | `SwapService` |
-| `user-swap` | `api/13-user-swap.md` | `UserSwapService` |
-| `utilities` | `api/14-utilities.md` | `UtilitiesService` |
+| `swap` | `api/11-swap.md` | `SwapService` |
+| `user-swap` | `api/12-user-swap.md` | `UserSwapService` |
+| `utilities` | `api/13-utilities.md` | `UtilitiesService` |
 
 **Reading Strategy:**
 - Full generation: Read all 13 module files
