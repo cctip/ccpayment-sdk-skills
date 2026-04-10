@@ -871,49 +871,49 @@ def get_app_coin_asset_list(self) -> List[dict]:
     return result.get("assets", [])
 ```
 
-## API模块详细说明
+## API Modules Detailed Description
 
-CCPayment API v2共包含13个功能模块，61个HTTP端点：
+CCPayment API v2 contains 13 functional modules with 61 HTTP endpoints:
 
-### 商户模块 (Merchant Modules)
+### Merchant Modules
 
-| 模块名称 | 文档文件 | API端点数量 | 主要功能 |
+| Module Name | Documentation File | API Endpoints | Main Functions |
 |:------|:---------|:----------|:---------|
-| `basic-info` | `api/01-basic-info.md` | 7 | 获取代币列表、法币列表、链信息、代币信息、法币价格等基础信息 |
-| `merchant-assets` | `api/02-merchant-assets.md` | 3 | 查询商户资产列表、单币种资产详情、资产余额 |
-| `merchant-deposit` | `api/03-merchant-deposit.md` | 4 | 创建商户充值地址、查询充值记录、查询单条充值详情 |
-| `merchant-withdraw` | `api/04-merchant-withdraw.md` | 8 | 商户提币申请、查询提币记录、取消提币、查询单条提币详情 |
-| `merchant-batch-withdraw` | `api/05-merchant-batch-withdraw.md` | 7 | 批量提币申请、查询批量提币记录、批量取消提币 |
+| `basic-info` | `api/01-basic-info.md` | 7 | Get coin list, fiat list, chain info, coin details, fiat prices, and other basic information |
+| `merchant-assets` | `api/02-merchant-assets.md` | 3 | Query merchant asset list, single coin asset details, asset balance |
+| `merchant-deposit` | `api/03-merchant-deposit.md` | 4 | Create merchant deposit address, query deposit records, query single deposit details |
+| `merchant-withdraw` | `api/04-merchant-withdraw.md` | 8 | Merchant withdrawal request, query withdrawal records, cancel withdrawal, query single withdrawal details |
+| `merchant-batch-withdraw` | `api/05-merchant-batch-withdraw.md` | 7 | Batch withdrawal request, query batch withdrawal records, batch cancel withdrawal |
 
-### 用户模块 (User Modules)
+### User Modules
 
-| 模块名称 | 文档文件 | API端点数量 | 主要功能 |
+| Module Name | Documentation File | API Endpoints | Main Functions |
 |:------|:---------|:----------|:---------|
-| `user-assets` | `api/06-user-assets.md` | 2 | 查询用户资产列表、单币种资产详情 |
-| `user-deposit` | `api/07-user-deposit.md` | 3 | 创建用户充值地址、查询用户充值记录 |
-| `user-withdraw` | `api/08-user-withdraw.md` | 4 | 用户提币申请、查询提币记录、取消提币 |
-| `user-transfer` | `api/09-user-transfer.md` | 7 | 用户间转账、批量转账、查询转账记录 |
-| `user-swap` | `api/12-user-swap.md` | 3 | 用户闪兑、查询闪兑记录、获取闪兑支持的币种 |
+| `user-assets` | `api/06-user-assets.md` | 2 | Query user asset list, single coin asset details |
+| `user-deposit` | `api/07-user-deposit.md` | 3 | Create user deposit address, query user deposit records |
+| `user-withdraw` | `api/08-user-withdraw.md` | 4 | User withdrawal request, query withdrawal records, cancel withdrawal |
+| `user-transfer` | `api/09-user-transfer.md` | 7 | User-to-user transfer, batch transfer, query transfer records |
+| `user-swap` | `api/12-user-swap.md` | 3 | User swap, query swap records, get swap-supported coins |
 
-### 其他模块 (Other Modules)
+### Other Modules
 
-| 模块名称 | 文档文件 | API端点数量 | 主要功能 |
+| Module Name | Documentation File | API Endpoints | Main Functions |
 |:------|:---------|:----------|:---------|
-| `orders` | `api/10-orders.md` | 3 | 创建订单、查询订单列表、查询订单详情 |
-| `swap` | `api/11-swap.md` | 5 | 闪兑下单、查询闪兑记录、获取闪兑汇率 |
-| `utilities` | `api/13-utilities.md` | 5 | 网络检测、获取服务器时间、IP白名单检测等工具接口 |
+| `orders` | `api/10-orders.md` | 3 | Create order, query order list, query order details |
+| `swap` | `api/11-swap.md` | 5 | Swap order, query swap records, get swap rates |
+| `utilities` | `api/13-utilities.md` | 5 | Network detection, get server time, IP whitelist detection, and other utility interfaces |
 
-### 认证与请求规范
+### Authentication and Request Specifications
 
 **Base URL:** `https://ccpayment.com/ccpayment/v2/`
 
-**请求头 (Headers):**
-- `Appid`: 应用标识
-- `Timestamp`: 毫秒级时间戳
-- `Sign`: 请求体签名 (HMAC-SHA256)
+**Request Headers:**
+- `Appid`: Application identifier
+- `Timestamp`: Millisecond timestamp
+- `Sign`: Request body signature (HMAC-SHA256)
 - `Content-Type`: `application/json`
 
-**通用响应格式:**
+**Common Response Format:**
 ```json
 {
   "code": 10000,
@@ -922,35 +922,25 @@ CCPayment API v2共包含13个功能模块，61个HTTP端点：
 }
 ```
 
-**状态码说明:**
-- `10000`: 请求成功
-- 其他代码请参考 `api/appendix.md` 中的错误码定义
+**Status Code Description:**
+- `10000`: Request successful
+- For other codes, please refer to error code definitions in `api/appendix.md`
 
 ---
 
-## 参考文档
+## References
 
-### 项目文档
-- **项目说明文档**: `README.md` - 包含项目特性、快速开始、使用示例、支持的AI Agent列表
-- **代码生成器文档**: `SKILL.md` (本文档) - 代码生成规则、类型映射、验证规则
+### Project Documentation
+- **Project README**: `README.md` - Contains project features, quick start, usage examples, and supported AI Agent list
+- **Code Generator Documentation**: `SKILL.md` (this document) - Code generation rules, type mappings, validation rules
 
-### API文档
-- **API文档入口**: `api/README.md` - API模块索引、认证说明
-- **数据类型附录**: `api/appendix.md` - 数据类型定义、错误码列表、验证规则
-- **模块详细文档**: `api/01-basic-info.md` ~ `api/13-utilities.md`
+### API Documentation
+- **API Documentation Entry**: `api/README.md` - API module index, authentication instructions
+- **Data Types Appendix**: `api/appendix.md` - Data type definitions, error code list, validation rules
+- **Module Detail Documentation**: `api/01-basic-info.md` ~ `api/13-utilities.md`
 
-### 在线资源
-- **官方网站**: https://ccpayment.com
-- **开发者控制台**: https://console.ccpayment.com
-- **API文档**: https://ccpayment.com/api/doc
+### Online Resources
+- **Official Website**: https://ccpayment.com
+- **Developer Console**: https://console.ccpayment.com
+- **API Documentation**: https://ccpayment.com/api/doc
 
-### 支持的AI Agent
-根据 `README.md`，本SDK生成器支持以下AI Agent：
-- **Windsurf** - Codeium的AI编程助手
-- **Cursor** - AI代码编辑器
-- **Cline** - VS Code的Claude扩展
-- **Continue.dev** - 开源AI编程助手
-- **Aider** - 命令行AI编程工具
-- **Gemini** - Google的AI代码助手
-- **Codex** - GitHub Copilot/OpenAI Codex
-- **DeepSeek** - DeepSeek Coder AI助手
