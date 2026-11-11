@@ -34,8 +34,8 @@ This directory documents the CCPayment API v2 HTTP routes and related request/re
 8. [User Withdraw Module](./08-user-withdraw.md) - 4 HTTP route(s)
 9. [User Transfer Module](./09-user-transfer.md) - 7 HTTP route(s)
 10. [Orders Module](./10-orders.md) - 3 HTTP route(s)
-11. [Swap Module](./11-swap.md) - 5 HTTP route(s)
-12. [User Swap Module](./12-user-swap.md) - 3 HTTP route(s)
+11. [Swap Module](./11-swap.md) - 10 HTTP route(s), including 5 Swap V2 routes
+12. [User Swap Module](./12-user-swap.md) - 6 HTTP route(s), including 3 User Swap V2 routes
 13. [Utilities Module](./13-utilities.md) - 5 HTTP route(s)
 
 ## Notes

@@ -147,6 +147,8 @@ Only generate code for the specified module, including:
 | `user-swap` | `api/12-user-swap.md` | `UserSwapService` |
 | `utilities` | `api/13-utilities.md` | `UtilitiesService` |
 
+For `swap` and `user-swap`, generate all `/swapv2/*` methods documented in the module files. Keep the V1 methods and routes callable, but mark each V1 method deprecated and point to its V2 replacement. Never silently translate a V1 request into V2: `SwapReq` and `SwapReqV2` use different amount, coin, fee, and slippage fields. Do not mark `merchant-common` protocol methods deprecated.
+
 **Reading Strategy:**
 - Full generation: Read all 13 module files
 - Modular generation: Only read the specified module file + base files
@@ -873,7 +875,7 @@ def get_app_coin_asset_list(self) -> List[dict]:
 
 ## API Modules Detailed Description
 
-CCPayment API v2 contains 13 functional modules with 61 HTTP endpoints:
+CCPayment API v2 contains 13 functional modules with 69 HTTP endpoints:
 
 ### Merchant Modules
 
@@ -893,14 +895,14 @@ CCPayment API v2 contains 13 functional modules with 61 HTTP endpoints:
 | `user-deposit` | `api/07-user-deposit.md` | 3 | Create user deposit address, query user deposit records |
 | `user-withdraw` | `api/08-user-withdraw.md` | 4 | User withdrawal request, query withdrawal records, cancel withdrawal |
 | `user-transfer` | `api/09-user-transfer.md` | 7 | User-to-user transfer, batch transfer, query transfer records |
-| `user-swap` | `api/12-user-swap.md` | 3 | User swap, query swap records, get swap-supported coins |
+| `user-swap` | `api/12-user-swap.md` | 6 | User swap V2 and deprecated V1, query swap records |
 
 ### Other Modules
 
 | Module Name | Documentation File | API Endpoints | Main Functions |
 |:------|:---------|:----------|:---------|
 | `orders` | `api/10-orders.md` | 3 | Create order, query order list, query order details |
-| `swap` | `api/11-swap.md` | 5 | Swap order, query swap records, get swap rates |
+| `swap` | `api/11-swap.md` | 10 | Swap V2 pairs, estimate, order and records; deprecated V1 routes |
 | `utilities` | `api/13-utilities.md` | 5 | Network detection, get server time, IP whitelist detection, and other utility interfaces |
 
 ### Authentication and Request Specifications

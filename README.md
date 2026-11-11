@@ -86,11 +86,11 @@ The SDK is organized by functional modules, totaling 13 modules:
 - `user-deposit` - User deposit management
 - `user-withdraw` - User withdrawal management
 - `user-transfer` - User transfer management
-- `user-swap` - User swap management
+- `user-swap` - User swap V2; V1 routes are deprecated
 
 ### Other Modules
 - `orders` - Order management
-- `swap` - Swap functionality
+- `swap` - Swap V2; V1 routes are deprecated
 - `utilities` - Utility interfaces
 
 ## Usage Examples
